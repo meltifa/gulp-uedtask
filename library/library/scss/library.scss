@@ -1,0 +1,309 @@
+%-text-justify {
+	$selector: selector_unify(&, ':after');
+	text-align: justify;
+	text-justify: distribute-all-lines;
+	text-align-last: justify;
+	-moz-text-align-last: justify;
+	-webkit-text-align-last: justify;
+
+	@at-root {
+		@media screen and (-webkit-min-device-pixel-ratio:0) {
+			#{$selector} {
+				content: '\3000';
+				overflow: hidden;
+				display: inline-block;
+				width: 100%;
+				height: 0;
+			}
+		}
+	}
+}
+
+@mixin text-justify {
+	@extend %-text-justify;
+}
+
+%-flex-justify {
+	display: flex;
+	justify-content: space-between;
+
+	> * {
+		flex-grow: 0;
+	}
+}
+
+@mixin flex-justify {
+	@extend %-flex-justify;
+}
+
+%-inline-block {
+	display: inline-block;
+	*display: inline;
+	*zoom: 1;
+}
+
+@mixin inline-block {
+	@extend %-inline-block;
+}
+
+%-clear-float {
+	zoom: 1;
+	&:after {
+		content: '';
+		display: block;
+		visibility: hidden;
+		clear: both;
+		height: 0;
+	}
+}
+
+@mixin clear-float {
+	@extend %-clear-float;
+}
+
+%-none-font {
+	line-height: 0;
+	font-size: 0;
+	tab-size: 0;
+}
+
+@mixin none-font {
+	@extend %-none-font;
+}
+
+%-absolute-center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+}
+
+%-transform-center {
+	@extend %-absolute-center;
+	transform: translate3d(-50%, -50%, 0);
+}
+
+%-margin-center {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+}
+
+@mixin margin-center($width: null, $height: null) {
+	@extend %-margin-center;
+	@if (null != $width) {
+		width: $width;
+		height: $height;
+	}
+}
+
+@mixin absolute-center($width: null, $height: null) {
+	@extend %-absolute-center;
+	@if (null != $width) {
+		$margin-top: - $height / 2;
+		$margin-left: - $width / 2;
+		width: $width;
+		height: $height;
+		margin: $margin-top 0 0 $margin-left;
+	}
+}
+
+@mixin transform-center($width: null, $height: null) {
+	@extend %-transform-center;
+	@if (null != $width) {
+		width: $width;
+		height: $height;
+	}
+}
+
+@mixin line-clip($line, $inline: false) {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-wrap: normal;
+	@if (1 == $line) {
+	// 还需要定义非 auto 的 width
+		white-space: nowrap;
+		@if ($inline) {
+		// 行内格式化上下文可能需要用 vertical-align 来调整
+			display: inline-block;
+		} @else {
+			display: block;
+		}
+	} @else {
+		-webkit-line-clamp: $line;
+		-webkit-box-orient: vertical;
+		@if ($inline) {
+			display: inline-block;
+			*display: inline;
+			*zoom: 1;
+			display: -webkit-inline-box;
+		} @else {
+			display: block;
+			display: -webkit-box;
+		}
+	}
+}
+
+@mixin media-mindpr($dpr) {
+
+	@media only screen and (-webkit-min-device-pixel-ratio: #{$dpr}),
+		only screen and (min--moz-device-pixel-ratio: #{$dpr}),
+		only screen and (min-device-pixel-ratio: #{$dpr}),
+		only screen and (min-resolution: #{$dpr*96}dpi),
+		only screen and (min-resolution: #{$dpr}dppx) {
+			@content;
+	}
+}
+
+@function image-group($url, $retina: 2) {
+	$at: str-index($url, '@');
+	$prefix: null;
+	$suffix: null;
+	@if ($at) {
+		$prefix: str-slice($url, 0, $at - 1);
+		$suffix: str-slice($url, $at + 3);
+	} @else {
+		$dot: 0;
+		$string: $url;
+		@while ($string) {
+			$index: str-index($string, '.');
+			@if ($index) {
+				$dot: $dot + $index;
+				$string: str-slice($string, $index + 1);
+			} @else {
+				$string: null;
+			}
+		}
+		$prefix: str-slice($url, 0, $dot - 1);
+		$suffix: str-slice($url, $dot);
+	}
+	$return: 'image-set(';
+	$start: 'url(' + $prefix;
+	@for $i from 1 through $retina {
+		$end: $suffix + ') ' + $i + 'x, ';
+		@if (1 != $i) {
+			$end: '@' + $i + 'x' + $end;
+		}
+		$return: $return + $start + $end;
+	}
+	$return: str-slice($return, 0, str-length($return) - 2);
+	$return: $return + ')';
+	@return #{$return};
+}
+
+@mixin background-border($color, $top: 1, $right: 1, $bottom: 1, $left: 1) {
+	$image: ();
+	$position: ();
+	$size: ();
+	$top-color: if('color' == type-of($top), $top, if($top > 0, $color, null));
+	$right-color: if('color' == type-of($right), $right, if($right > 0, $color, null));
+	$bottom-color: if('color' == type-of($bottom), $bottom, if($bottom > 0, $color, null));
+	$left-color: if('color' == type-of($left), $left, if($left > 0, $color, null));
+	@if ($top-color) {
+		$image: append($image, 'linear-gradient(to bottom, ' + $top-color + ' 50%, transparent 0%)');
+		$position: append($position, 'top');
+		$size: append($size, '100% 1px');
+	}
+	@if ($right-color) {
+		$image: append($image, 'linear-gradient(to left, ' + $right-color + ' 50%, transparent 0%)');
+		$position: append($position, 'right');
+		$size: append($size, '1px 100%');
+	}
+	@if ($bottom-color) {
+		$image: append($image, 'linear-gradient(to top, ' + $bottom-color + ' 50%, transparent 0%)');
+		$position: append($position, 'bottom');
+		$size: append($size, '100% 1px');
+	}
+	@if ($left-color) {
+		$image: append($image, 'linear-gradient(to right, ' + $left-color + ' 50%, transparent 0%)');
+		$position: append($position, 'left');
+		$size: append($size, '1px 100%');
+	}
+	$length: length($image);
+	$image-str: '';
+	$position-str: '';
+	$size-str: '';
+	@for $i from 1 through $length {
+		@if (1 != $i) {
+			$image-str: $image-str + ', ';
+			$position-str: $position-str + ', ';
+			$size-str: $size-str + ', ';
+		}
+		$image-str: $image-str + nth($image, $i);
+		$position-str: $position-str + nth($position, $i);
+		$size-str: $size-str + nth($size, $i);
+	}
+	background: {
+		image: unquote($image-str);
+		position: unquote($position-str);
+		size: unquote($size-str);
+		repeat: no-repeat;
+	}
+}
+
+// %-image-center-box {
+// 	position: relative;
+// 	*position: static;
+// 	*vertical-align: middle;
+// 	*text-align: center;
+// 	*line-height: 1.14;
+
+// 	img {
+// 		position: absolute;
+// 		*position: static;
+// 		*vertical-align: middle;
+// 	}
+// }
+
+// @mixin image-center-box($width, $height, $inline: false) {
+// 	@extend %-image-center-box;
+// 	width: $width;
+// 	height: $height;
+// 	*font-size: floor($height / 1.14);
+
+// 	@if ($inline) {
+// 		@include inline-block();
+// 	} @else {
+// 		display: block;
+// 	}
+
+// 	img {
+// 		@include margin-center();
+// 		*position: static;
+// 		max-width: $width;
+// 		max-height: $height;
+// 	}
+// }
+
+%-image-center-box {
+	overflow: hidden;
+	position: relative;
+	*position: static;
+	*text-align: center;
+
+	img {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		margin: auto;
+		*position: static;
+		*vertical-align:middle;
+	}
+}
+
+@mixin image-center-box($width, $height) {
+	@extend %-image-center-box;
+	width: $width;
+	height: $height;
+	*line-height: $height;
+	*font-size: floor($height / 1.14);
+
+	img {
+		max-width: $width;
+		max-height: $height;
+	}
+}

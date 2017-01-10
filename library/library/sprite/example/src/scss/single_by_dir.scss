@@ -1,0 +1,64 @@
+@import '_spr_sbd';
+
+%-sprite {
+	// 此模式下, sprite-info 仅支持两个参数：属性和是否雪碧图
+	$width: #{sprite-info('width')}px;
+	$height: #{sprite-info('height')}px;
+	$url: sprite-info('url', true);
+	content: '\3000';
+	display: inline-block;
+	padding: 1px;
+	background: url($url) no-repeat;
+	background: {
+		origin: content-box;
+		size: $width $height;
+	}
+}
+
+// 此模式下, sprite-group 必须指定文件夹参数
+@each $name, $sprite in sprite-group('icon') {
+	%-sprite-#{$name} {
+		$width: sprite-prop($sprite, 'width');
+		$height: sprite-prop($sprite, 'height');
+		$x: sprite-prop($sprite, 'offset_x');
+		$y: sprite-prop($sprite, 'offset_y');
+		@extend %-sprite;
+		width: #{$width}px;
+		height: #{$height}px;
+		line-height: #{$height}px;
+		background-position: #{$x}px #{$y}px;
+	}
+}
+
+body {
+	> p {
+
+		&:nth-of-type(1):before {
+			@extend %-sprite-icon-smile;
+		}
+
+		&:nth-of-type(2):before {
+			@extend %-sprite-qqzone;
+		}
+
+		&:nth-of-type(3):before {
+			// sprite-prop 应当以 “文件夹/文件名” 的方式作为首参
+			$width: sprite-prop('home/close', 'width');
+			$height: sprite-prop('home/close', 'height');
+			$x: sprite-prop('home/close', 'offset_x');
+			$y: sprite-prop('home/close', 'offset_y');
+			$url: sprite-prop('home/close', 'url', true);
+			$total_width: sprite-prop('home/close', 'total_width');
+			$total_height: sprite-prop('home/close', 'total_height');
+			@extend %-sprite;
+			width: #{$width}px;
+			height: #{$height}px;
+			line-height: #{$height}px;
+			background: {
+				image: url($url);
+				size: #{$total_width}px #{$total_height}px;
+				position: #{$x}px #{$y}px;
+			}
+		}
+	}
+}

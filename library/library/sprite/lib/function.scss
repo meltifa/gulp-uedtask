@@ -1,0 +1,46 @@
+@function sprite-prop($name, $property, $retina: null) {
+	$type: type-of($name);
+	@if ('map' == $type) {
+		@return map-get($name, $property);
+	}
+	$retina: if(null == $retina, global_variable_exists('__sprite-group-2x__'), $retina);
+	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
+	$slash: str-index($name, '/');
+	$group: null;
+	@if ($slash) {
+		$group: str-slice($name, 0, $slash - 1);
+		$name: str-slice($name, $slash + 1);
+	} @else {
+		$group: str-index($name, '-');
+		$group: if($group, str-slice($name, 0, $group - 1), 'default');
+		$group: if(map-has-key($set, $group), $group, 'default');
+	}
+	$group: map-get($set, $group);
+	$name: map-get($group, $name);
+	@return map-get($name, $property);
+}
+
+@function sprite-info($dir, $prop: null, $retina: null) {
+	@if ('string' != type-of($prop)) {
+		$retina: $prop;
+		$prop: $dir;
+		$dir: nth(map-keys($__sprite-group__), 1);
+	}
+	$retina: if(null == $retina, global_variable_exists('__sprite-group-2x__'), $retina);
+	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
+	$set: map-get($set, $dir);
+	$set: map-get($set, nth(map-keys($set), 1));
+	$prop: if('width' == $prop, 'total_width', $prop);
+	$prop: if('height' == $prop, 'total_height', $prop);
+	@return map-get($set, $prop);
+}
+
+@function sprite-group($group: 'default', $retina: null) {
+	@if('bool' == type-of($group)) {
+		$retina: $group;
+		$group: 'default';
+	}
+	$retina: if(null == $retina, global_variable_exists('__sprite-group-2x__'), $retina);
+	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
+	@return map-get($set, $group);
+}

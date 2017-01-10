@@ -1,0 +1,194 @@
+$__sprite-group__: map-merge(if(global_variable_exists("__sprite-group__"), $__sprite-group__, ()), (
+	"home": (
+		"close": (
+			"name": "close",
+			"width": 33,
+			"height": 33,
+			"offset_x": 0,
+			"offset_y": -39,
+			"total_width": 80,
+			"total_height": 72,
+			"escaped_image": "../img/_spr_sbd.png",
+			"offset_x_pct": 0,
+			"offset_y_pct": "100.0000%",
+			"x": 0,
+			"y": -39,
+			"x_pct": 0,
+			"y_pct": "100.0000%",
+			"url": "../img/_spr_sbd.png"
+		),
+		"sina": (
+			"name": "sina",
+			"width": 39,
+			"height": 32,
+			"offset_x": -41,
+			"offset_y": 0,
+			"total_width": 80,
+			"total_height": 72,
+			"escaped_image": "../img/_spr_sbd.png",
+			"offset_x_pct": "100.0000%",
+			"offset_y_pct": 0,
+			"x": -41,
+			"y": 0,
+			"x_pct": "100.0000%",
+			"y_pct": 0,
+			"url": "../img/_spr_sbd.png"
+		)
+	),
+	"icon": (
+		"icon-smile": (
+			"name": "icon-smile",
+			"width": 28,
+			"height": 28,
+			"offset_x": -37,
+			"offset_y": -39,
+			"total_width": 80,
+			"total_height": 72,
+			"escaped_image": "../img/_spr_sbd.png",
+			"offset_x_pct": "71.1538%",
+			"offset_y_pct": "88.6364%",
+			"x": -37,
+			"y": -39,
+			"x_pct": "71.1538%",
+			"y_pct": "88.6364%",
+			"url": "../img/_spr_sbd.png"
+		),
+		"qqzone": (
+			"name": "qqzone",
+			"width": 37,
+			"height": 35,
+			"offset_x": 0,
+			"offset_y": 0,
+			"total_width": 80,
+			"total_height": 72,
+			"escaped_image": "../img/_spr_sbd.png",
+			"offset_x_pct": 0,
+			"offset_y_pct": 0,
+			"x": 0,
+			"y": 0,
+			"x_pct": 0,
+			"y_pct": 0,
+			"url": "../img/_spr_sbd.png"
+		)
+	)
+));
+$__sprite-group-2x__: map-merge(if(global_variable_exists("__sprite-group-2x__"), $__sprite-group-2x__, ()), (
+	"home": (
+		"close": (
+			"name": "close",
+			"width": 66,
+			"height": 66,
+			"offset_x": 0,
+			"offset_y": -78,
+			"total_width": 160,
+			"total_height": 144,
+			"escaped_image": "../img/_spr_sbd@2x.png",
+			"offset_x_pct": 0,
+			"offset_y_pct": "100.0000%",
+			"x": 0,
+			"y": -78,
+			"x_pct": 0,
+			"y_pct": "100.0000%",
+			"url": "../img/_spr_sbd@2x.png"
+		),
+		"sina": (
+			"name": "sina",
+			"width": 78,
+			"height": 64,
+			"offset_x": -82,
+			"offset_y": 0,
+			"total_width": 160,
+			"total_height": 144,
+			"escaped_image": "../img/_spr_sbd@2x.png",
+			"offset_x_pct": "100.0000%",
+			"offset_y_pct": 0,
+			"x": -82,
+			"y": 0,
+			"x_pct": "100.0000%",
+			"y_pct": 0,
+			"url": "../img/_spr_sbd@2x.png"
+		)
+	),
+	"icon": (
+		"icon-smile": (
+			"name": "icon-smile",
+			"width": 56,
+			"height": 56,
+			"offset_x": -74,
+			"offset_y": -78,
+			"total_width": 160,
+			"total_height": 144,
+			"escaped_image": "../img/_spr_sbd@2x.png",
+			"offset_x_pct": "71.1538%",
+			"offset_y_pct": "88.6364%",
+			"x": -74,
+			"y": -78,
+			"x_pct": "71.1538%",
+			"y_pct": "88.6364%",
+			"url": "../img/_spr_sbd@2x.png"
+		),
+		"qqzone": (
+			"name": "qqzone",
+			"width": 74,
+			"height": 70,
+			"offset_x": 0,
+			"offset_y": 0,
+			"total_width": 160,
+			"total_height": 144,
+			"escaped_image": "../img/_spr_sbd@2x.png",
+			"offset_x_pct": 0,
+			"offset_y_pct": 0,
+			"x": 0,
+			"y": 0,
+			"x_pct": 0,
+			"y_pct": 0,
+			"url": "../img/_spr_sbd@2x.png"
+		)
+	)
+));
+
+
+
+@function sprite-prop($name, $property, $retina: false) {
+	$type: type-of($name);
+	@if ('map' == $type) {
+		@return map-get($name, $property);
+	}
+	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
+	$slash: str-index($name, '/');
+	$group: null;
+	@if ($slash) {
+		$group: str-slice($name, 0, $slash - 1);
+		$name: str-slice($name, $slash + 1);
+	} @else {
+		$group: str-index($name, '-');
+		$group: if($group, str-slice($name, 0, $group - 1), 'default');
+		$group: if(map-has-key($set, $group), $group, 'default');
+	}
+	$group: map-get($set, $group);
+	$name: map-get($group, $name);
+	@return map-get($name, $property);
+}
+
+@function sprite-info($dir, $prop: false, $retina: false) {
+	@if ('string' != type-of($prop)) {
+		$retina: $prop;
+		$prop: $dir;
+		$dir: nth(map-keys($__sprite-group__), 1);
+	}
+	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
+	$set: map-get($set, $dir);
+	$set: map-get($set, nth(map-keys($set), 1));
+	$prop: if('width' == $prop, 'total_width', $prop);
+	$prop: if('height' == $prop, 'total_height', $prop);
+	@return map-get($set, $prop);
+}
+
+@function sprite-group($group: 'default', $retina: false) {
+	@if('bool' == type-of($group)) {
+		$retina: $group;
+		$group: 'default';
+	}
+	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
+	@return map-get($set, $group);
+}

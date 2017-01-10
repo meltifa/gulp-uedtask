@@ -1,0 +1,30 @@
+{
+  "name": "haoycn-library",
+  "version": "0.4.1",
+  "description": "store and require tiny modules",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/HaoyCn/library/"
+  },
+  "keywords": [
+    "library"
+  ],
+  "author": {
+    "name": "HaoyCn",
+    "email": "xuhaoyang@live.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HaoyCn/library/issues"
+  },
+  "readme": "用于获取小型通用文件夹内的文件地址索引。\r\n\r\n将文件夹放在此模块的 `./library` 文件夹中（即同本文档同目录下），使用时候只需以文件夹名称为参数实例化一个类，通过一些方法快速访问这些文件夹内的文件地址。\r\n\r\n###lib.all()###\r\n\r\n返回文件夹内所有文件的绝对地址数组。\r\n\r\n###lib.get(param1[, param2]*)###\r\n\r\n支持多参数。参数一般来说为文件名即可，不需要写出很长的相对路径，系统将自动匹配。\r\n\r\n返回一个数组，数组包含了文件的绝对地址。\r\n\r\n\r\n###lib.use(name)###\r\n\r\n参数 `name` 是 js 文件名称，将返回该 js 模块的结果。\r\n\r\n###lib.cwd()###\r\n\r\n返回文件夹绝对路径。",
+  "readmeFilename": "readme.md",
+  "gitHead": "2af6392df2c199ccbd6927c58f2afda68fc57a16",
+  "_id": "haoycn-library@0.4.1",
+  "_shasum": "27a9434e9e071c950f75d4f074c8aaff4d5a5fd2",
+  "_from": "haoycn-library@latest"
+}

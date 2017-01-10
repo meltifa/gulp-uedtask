@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>Sprite Test</title>
+	<script>
+		var exec = location.href.match(/\?mode=(\d+)/);
+		var mode = exec ? parseInt(exec[1], 10) : 0;
+		var sheets = ['single', 'single_by_dir', 'multi'];
+		var link = document.createElement('link');
+		link.setAttribute('rel', 'stylesheet');
+		link.setAttribute('href', 'css/' + sheets[mode] + '.css');
+		document.head.appendChild(link);
+	</script>
+</head>
+<body>
+	<p></p>
+	<p></p>
+	<p></p>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "name": "gulp-uedtask",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "babel -d ./build ./src",
+    "lint": "eslint src/**/*.es6"
+  },
+  "keywords": [
+    "gulp"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "autoprefixer": "^6.5.3",
+    "browser-sync": "^2.18.2",
+    "del": "^2.2.2",
+    "fonteditor-core": "0.0.33",
+    "gulp-cache": "^0.4.5",
+    "gulp-html-tpl": "^0.4.1",
+    "gulp-iconfont": "^8.0.1",
+    "gulp-imagemin": "2.4.0",
+    "gulp-postcss": "^6.2.0",
+    "gulp-posthtml": "^2.0.0",
+    "gulp-retina-resizer": "^1.0.0",
+    "gulp-sass": "^3.0.0",
+    "gulp-template": "^4.0.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp.spritesmith": "^6.2.1",
+    "imagemin-mozjpeg": "5.1.0",
+    "imagemin-pngquant": "4.2.2",
+    "juicer": "^0.6.14",
+    "postcss-px-editor": "^0.1.0",
+    "postcss-pxtorem": "^3.3.1",
+    "postcss-url-editor": "^0.3.1",
+    "run-sequence": "^1.2.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-preset-es2015": "^6.18.0"
+  }
+}
