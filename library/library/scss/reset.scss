@@ -1,100 +1,46 @@
-* {
-	word: {
-		wrap: break-word;
-		break: break-all;
-	}
-	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-	appearance: none;
-}
-
-article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
-	display: block;
-}
-
-body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, button, p, blockquote, th, td, address, figure {
+body, h1, h2, h3, h4, h5, h6, p, img, dl, dd, ol, ul, form, th, td, figure, figcaption {
 	margin: 0;
 	padding: 0;
-	outline: 0;
-}
-
-table {
-	border: {
-		collapse: collapse;
-		spacing: 0;
-	}
-	font-size: inherit;
-}
-
-caption, th {
-	text-align: left;
-}
-
-fieldset, img, iframe {
 	border: 0;
-}
-
-address, caption, cite, code, dfn, em, strong, th, var, i { 
-	font: {
-		style: normal;
-		weight: normal;
-	}
-}
-
-li {
-	list-style: none;
-}
-
-h1, h2, h3, h4, h5, h6 {
-	font: {
-		size: 100%;
-		weight: normal;
-	}
-}
-
-q {
-	&:before, &:after {
-		content: '';
-	}
-}
-
-abbr, acronym {
-	border: 0;
-	font-variant: normal;
-}
-
-input, textarea, select, button {
-	border: 0;
-	font: {
-		family: inherit;
-		size: inherit;
-		weight: inherit;
-	}
-	resize: none;
-	background: none;
-}
-
-input {
-	&::-ms-clear, &::-ms-reveal {
-		display: none;
-	}
-}
-
-label, button, a {
-	cursor: pointer;
-}
-
-legend, a {
-	color:inherit;
-}
-
-body {
-	font: {
-		family: sans-serif;
-		size-adjust: 100%;
-	}
-	text-size-adjust: 100%;
+	font: inherit;
 }
 
 a {
 	text-decoration: none;
+	color: inherit;
+}
+
+body {
+	word-wrap: break-word;
+	word-break: break-all;
+	text-size-adjust: 100%;
+	font-family: sans-serif;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+button, input, select, textarea {
+	font-size: 100%;
+	margin: 0;
+	appearance: none;
+}
+
+input::-ms-clear, input::-ms-reveal {
+	display: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+caption, th {
+	text-align: left;
 }
