@@ -144,7 +144,7 @@ REM 布局中，SCSS 中的像素值应当按照设计稿量出的尺寸书写�
 
 支持引入多个雪碧图文件。
 
-默认提供以下三个基本函数：
+在生成的 _sprite.scss 文件中，默认提供以下三个基本函数：
 
 ####@function sprite-prop($name, $prop, $retina: null)####
 
@@ -230,6 +230,7 @@ REM 布局中，SCSS 中的像素值应当按照设计稿量出的尺寸书写�
 		width: unquote(sprite-prop('home/back', 'width') + 'px');
 	}
 
+
 ## Iconfont ##
 
 此功能用于将 SVG 图标生成为字体。
@@ -249,26 +250,47 @@ SVG 文件置于：src/asset/iconfont。源文件将被自动添加前缀，请�
 
 ### SCSS 语法 ###
 
-使用例子：
+在生成的 _iconfont.scss 文件中，默认提供以下两个基本函数：
 
-	@import '_iconfont';
-	.search {
-		@include iconfont('search');
+#### @function iconfont-prop($name) ####
+
+获取某一 iconfont 对应的字符编码。
+
+如：
+
+	// in SCSS
+	.a:before {
+		content: iconfont-prop('home');
 	}
-
-编译结果：
-
-	.search:before {
+	
+	// in CSS
+	.a:before {
 		content: "\ea01";
-		font-family: "iconfont";
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		font-style: normal;
-		font-variant: normal;
-		font-weight: normal;
-		text-decoration: none;
-		text-transform: none;
 	}
+
+#### @function iconfont-group() ####
+
+用于在 `@each` 中遍历。
+
+如：
+
+	// in SCSS
+	@each $name, $char in iconfont-group() {
+
+		.icon-#{$name}:before {
+			content: $name;
+		}
+	}
+
+	// in CSS
+	.icon-home:before {
+		content: "\ea01";
+	}
+	.icon-back:before {
+		content: "\ea02";
+	}
+
+注：不在 SCSS 文件中自动书写好 @font-face 等内容，是为了方便开发者自由书写，也是避免如果在某一项目的不同文件中多次引入 _iconfont.scss 导致多次写入 @font-face 等内容。
 
 ### 兼容IE6-7 ###
 
