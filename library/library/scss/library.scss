@@ -1,6 +1,6 @@
 @charset "UTF-8";
 //需要兼容IE9以下的需要在文档最上声明$LegacyIE: true
-$LegacyIE: false;
+$LegacyIE: false !default;
 //半透明背景色效果, 前面参数颜色, 后面参数透明度
 //示例：@include bgAlpha(#f00, .5)
 @mixin bgAlpha($color, $alpha) {
@@ -198,7 +198,7 @@ $LegacyIE: false;
 %image-center-box {
     position: relative;
     overflow: hidden;
-    text-align: center;
+    *text-align: center;
     img {
         position: absolute;
         top: 0;

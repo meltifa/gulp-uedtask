@@ -29,7 +29,8 @@ table {
 button, input, select, textarea {
 	font-size: 100%;
 	margin: 0;
-	appearance: none;
+	padding: 0;
+	outline: none;
 }
 
 input::-ms-clear, input::-ms-reveal {
