@@ -1,6 +1,6 @@
 {
   "name": "gulp-uedtask",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -26,13 +26,16 @@
     "gulp-sass": "^3.0.0",
     "gulp-template": "^4.0.0",
     "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.8",
     "gulp.spritesmith": "^6.2.1",
     "imagemin-mozjpeg": "5.1.0",
     "imagemin-pngquant": "4.2.2",
     "juicer": "^0.6.14",
+    "postcss": "^5.2.12",
     "postcss-px-editor": "^0.1.0",
     "postcss-pxtorem": "^3.3.1",
     "postcss-url-editor": "^0.3.1",
+    "posthtml-parser": "^0.2.0",
     "run-sequence": "^1.2.2"
   },
   "devDependencies": {

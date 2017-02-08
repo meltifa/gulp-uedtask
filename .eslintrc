@@ -61,6 +61,7 @@
 		"no-unused-vars": "warn",
 		"no-use-before-define": "warn",
 		"no-confusing-arrow": "error",
+		"no-console": "warn",
 		"no-duplicate-imports": "error",
 		"no-useless-computed-key": "error",
 		"no-useless-constructor": "error",
