@@ -15,6 +15,17 @@ exports.default = function (gulp) {
 	});
 
 	gulp.task('build:check_sources', function () {
+
+		function getUrlsFromCSS(css) {
+			var urls = [];
+			String(css).replace(/url\(\s*(["']?)([^)"']+?)\1\s*\)/g, function (_, q, url) {
+				if (0 > urls.indexOf(url)) {
+					urls.push(url);
+				}
+			});
+			return urls;
+		}
+
 		function checkHTML(file, content) {
 			var logger = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
@@ -59,7 +70,21 @@ exports.default = function (gulp) {
 							logger[attrs.href] = true;
 						}
 						break;
+					case 'style':
+						if (sub) {
+							getUrlsFromCSS(sub.shift()).reduce(function (logger, url) {
+								logger[url] = true;
+								return logger;
+							}, logger);
+						}
+						break;
 					default:
+						if (attrs.style) {
+							getUrlsFromCSS(attrs.style).reduce(function (logger, url) {
+								logger[url] = true;
+								return logger;
+							}, logger);
+						}
 						if (sub) {
 							checkHTML(file, sub, logger);
 						}
