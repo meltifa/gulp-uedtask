@@ -151,6 +151,7 @@ var FontCreator = function () {
 			preferredFamily: family,
 			version: 'Version 1.000'
 		});
+		fontObject['OS/2'].bProportion = 0;
 		font.set(fontObject);
 
 		this.font = font;
