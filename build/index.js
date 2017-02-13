@@ -55,7 +55,7 @@ var Task = function () {
 					args[_key - 1] = arguments[_key];
 				}
 
-				if (0 > taskNames.indexOf('name')) {
+				if (0 > taskNames.indexOf(name)) {
 					taskNames.push(name);
 				}
 				return defaultGulpTask.apply(undefined, [name].concat(args));

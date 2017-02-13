@@ -26,7 +26,7 @@ class Task {
 		const defaultGulpTask = gulp.task.bind(gulp);
 		const taskNames = this.taskNames;
 		gulp.task = (name, ...args) => {
-			if(0 > taskNames.indexOf('name')) {
+			if(0 > taskNames.indexOf(name)) {
 				taskNames.push(name);
 			}
 			return defaultGulpTask(name, ...args);
