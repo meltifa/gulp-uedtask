@@ -12,9 +12,10 @@ exports.default = function (gulp, options, _ref) {
 	gulp.task('default:image', function () {
 		return new Promise(function (resolve, reject) {
 			return setTimeout(function () {
-				return gulp.src('src/{img,images}/**/*.{jpg,png,gif}')
-				//.pipe(cache(createImagemin()))
-				.pipe(createImagemin()).pipe(gulp.dest('dist')).on('end', resolve).on('error', reject).on('end', browser.reload);
+				return gulp.src('src/{img,images}/**/*.{jpg,png,gif}').pipe((0, _gulpIf2.default)(function (_ref2) {
+					var path = _ref2.path;
+					return !/\.min\.(jpg|png|gif)$/i.test(path);
+				}, createImagemin())).pipe(gulp.dest('dist')).on('end', resolve).on('error', reject).on('end', browser.reload);
 			}, 500);
 		});
 	});
@@ -36,9 +37,11 @@ var _imageminMozjpeg = require('imagemin-mozjpeg');
 
 var _imageminMozjpeg2 = _interopRequireDefault(_imageminMozjpeg);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _gulpIf = require('gulp-if');
 
-//import cache from 'gulp-cache';
+var _gulpIf2 = _interopRequireDefault(_gulpIf);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function createImagemin() {
 	return (0, _gulpImagemin2.default)({

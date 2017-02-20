@@ -1,6 +1,6 @@
 {
   "name": "gulp-uedtask",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -19,6 +19,7 @@
     "gulp-cache": "^0.4.5",
     "gulp-html-tpl": "^0.4.1",
     "gulp-iconfont": "^8.0.1",
+    "gulp-if": "^2.0.2",
     "gulp-imagemin": "2.4.0",
     "gulp-postcss": "^6.2.0",
     "gulp-posthtml": "^2.0.0",

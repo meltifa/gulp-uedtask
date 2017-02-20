@@ -125,6 +125,14 @@ REM 布局中，SCSS 中的像素值应当按照设计稿量出的尺寸书写�
 		return setSize();
 	}());
 
+## 图片 ##
+
+基本目录：src/images 或 src/img 文件夹。
+
+会将基本目录下的 .png/.jpg/.gif 图片压缩后生成到 dist 对应目录。
+
+如果以 .min.png/.min.jpg/.min.gif 为后缀，则只复制到 dist 对应目录，而不会压缩。
+
 ## Sprites ##
 
 ### 生成雪碧图 ###
