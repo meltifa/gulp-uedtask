@@ -4,12 +4,13 @@ import generator from 'gulp-iconfont';
 import path from 'path';
 import fs from 'fs';
 import { mkdirSync } from '../utils';
+import del from 'del';
 
 const iconPath = process.cwd() + '/src/asset/iconfont/';
 const unicodeRE = /^u([A-Z0-9]{4})-/;
 
 function getSvgs() {
-	return fs.readdirSync(iconPath).filter(file => fs.lstatSync(iconPath + file).isFile());
+	return fs.readdirSync(iconPath).filter(file => /\.svg$/i.test(file));
 }
 
 function getMaxUnicode() {
@@ -39,16 +40,15 @@ function renameSvgs() {
 	return true;
 }
 
-export default function iconfont(gulp, options, { browser, isBuild }) {
-
-	try {
-		fs.accessSync(iconPath, fs.hasOwnProperty('R_OK') ? fs.R_OK : fs.constants.R_OK);
-	} catch(e) {
-		gulp.task('default:iconfont', function() {});
-		return;
-	}
+export default function(options, { gulp }) {
 
 	gulp.task('default:iconfont', function() {
+		try {
+			fs.accessSync(iconPath, fs.hasOwnProperty('R_OK') ? fs.R_OK : fs.constants.R_OK);
+		} catch(e) {
+			return Promise.resolve();
+		}
+
 		renameSvgs();
 		return gulp.src('src/asset/iconfont/*.svg')
 			.pipe(generator({
@@ -72,12 +72,16 @@ export default function iconfont(gulp, options, { browser, isBuild }) {
 				].join('\n\n');
 				fs.writeFileSync('src/css/_iconfont.scss', content);
 			})
-			.pipe(gulp.dest('dist/font'))
-			.on('end', browser.reload);
+			.pipe(gulp.dest('dist/font'));
 	});
 
-	if(!isBuild) {
+	gulp.task('dev:after:iconfont', function(){
 		gulp.watch('src/asset/iconfont/*.svg', ['default:iconfont']);
-	}
+	});
+
+	gulp.task('build:before:iconfont', function() {
+		return del('dist/font/iconfont.*');
+	});
+
 	
 }

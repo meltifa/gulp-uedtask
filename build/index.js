@@ -1,142 +1,260 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
 
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
 var _gulp = require('gulp');
 
 var _gulp2 = _interopRequireDefault(_gulp);
 
-var _browserSync = require('browser-sync');
+var _taskCommands = require('./libs/task-commands');
 
-var _browserSync2 = _interopRequireDefault(_browserSync);
+var _taskCommands2 = _interopRequireDefault(_taskCommands);
 
-var _library = require('../library');
+var _taskLogger = require('./libs/task-logger');
 
-var _library2 = _interopRequireDefault(_library);
+var _taskLogger2 = _interopRequireDefault(_taskLogger);
+
+var _taskListener = require('./libs/task-listener');
+
+var _taskListener2 = _interopRequireDefault(_taskListener);
+
+var _runSequence = require('run-sequence');
+
+var _runSequence2 = _interopRequireDefault(_runSequence);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function isLikeStream(obj) {
+	return Boolean(obj && 'function' === typeof obj.pipe && 'function' === typeof obj.on);
+}
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function isLikePromise(obj) {
+	return Boolean(obj && 'function' === typeof obj.then && 'function' === typeof obj.catch);
+}
 
-var Task = function () {
-	function Task() {
-		_classCallCheck(this, Task);
+// 原始 Gulp 的 task() 方法
+var gulpTask = _gulp2.default.task.bind(_gulp2.default);
 
-		this.tasks = null;
-		this.defaultEndCb = [];
-		this.taskNames = [];
-		this.isBuild = -1 < process.argv.indexOf('build');
-		this.browser = _browserSync2.default.create();
-		this.gulp = this._bindGulp(_gulp2.default);
-		this.ban = this.ban.bind(this);
-		this.only = this.only.bind(this);
-		this.run = this.run.bind(this);
-		this.Library = _library2.default;
-		this.defaultEnd = this.defaultEnd.bind(this);
+// 包裹原有的方法，用来接入任务开始和结束的广播，并登记任务
+_gulp2.default.task = function (name) {
+	for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+		args[_key - 1] = arguments[_key];
 	}
 
-	_createClass(Task, [{
-		key: '_bindGulp',
-		value: function _bindGulp(gulp) {
-			var defaultGulpTask = gulp.task.bind(gulp);
-			var taskNames = this.taskNames;
-			gulp.task = function (name) {
-				for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-					args[_key - 1] = arguments[_key];
-				}
+	if ('string' !== typeof name || !name) {
+		throw new Error('Task name must be a string!');
+	}
+	var handler = args.pop();
+	var lastArg = handler;
 
-				if (0 > taskNames.indexOf(name)) {
-					taskNames.push(name);
-				}
-				return defaultGulpTask.apply(undefined, [name].concat(args));
-			};
-			return gulp;
-		}
-	}, {
-		key: '_use',
-		value: function _use(taskNameList, isOnly) {
+	// 包裹原有的处理方法
+	if ('function' === typeof handler) {
+		lastArg = function lastArg() {
 			var _this = this;
 
-			if (null === this.tasks) {
-				(function () {
-					var taskNames = Array.isArray(taskNameList) ? [].concat(_toConsumableArray(taskNameList)) : [taskNameList];
-					_this.tasks = _fs2.default.readdirSync(__dirname + '/tasks').reduce(function (tasks, file) {
-						var pathname = _path2.default.resolve(__dirname + '/tasks', file);
-						if (_fs2.default.lstatSync(pathname).isFile()) {
-							var name = _path2.default.parse(pathname).name;
-							var isDefault = 'default' === name;
-							var inList = -1 < taskNames.indexOf(name);
-							var condition = isOnly ? !isDefault && inList : isDefault || !inList;
-							if (condition) {
-								var lib = require(pathname);
-								var handler = 'function' === typeof lib ? lib : 'function' === typeof lib.default ? lib.default : null;
-								if (handler) {
-									tasks[isDefault ? 'unshift' : 'push'](handler);
-								}
-							}
-						}
-						return tasks;
-					}, []).reverse();
-				})();
+			return new _promise2.default(function (resolve) {
+				// 广播任务开始
+				_taskListener2.default.emit('start', name);
+				// 执行原方法
+				var result = handler.call(_this, resolve);
+				// 返回流的时候绑定事件得知结束
+				if (isLikeStream(result)) {
+					result.on('end', resolve);
+					result.on('finish', resolve);
+					// 返回 Promise 添加 then()
+				} else if (isLikePromise(result)) {
+					result.then(resolve);
+					// 否则处理方法接受到 resolve() 后自行调用
+					// 但如果原方法不接受参数，则标志任务直接结束
+				} else if (!handler.length) {
+					resolve();
+				}
+				// 任务结束后广播
+			}).then(function () {
+				_taskListener2.default.emit('end', name);
+			});
+		};
+		// task() 没有执行函数，可能只是添加了依赖
+	} else {
+		args.push(handler);
+		lastArg = function lastArg(cb) {
+			// 广播任务开始和结束
+			_taskListener2.default.emit('start', name);
+			_taskListener2.default.emit('end', name);
+			return cb();
+		};
+	}
+	_taskLogger2.default.addTask(name);
+	return gulpTask.apply(undefined, [name].concat(args, [lastArg]));
+};
+
+var UedTask = function () {
+	function UedTask() {
+		(0, _classCallCheck3.default)(this, UedTask);
+	}
+
+	(0, _createClass3.default)(UedTask, null, [{
+		key: 'getTaskFiles',
+		value: function getTaskFiles(filter) {
+			var taskFiles = _fs2.default.readdirSync(__dirname + '/tasks').reduce(function (files, task) {
+				var match = task.match(/^([-\w]+)\.js$/i);
+				if (match) {
+					files.push(match[1]);
+				}
+				return files;
+			}, []);
+			return 'function' === typeof filter ? taskFiles.filter(filter) : taskFiles;
+		}
+
+		// 暴露给内部任务的工具
+
+	}, {
+		key: 'getSafeContext',
+		value: function getSafeContext() {
+			return {
+				gulp: _gulp2.default,
+				TaskLogger: {
+					getCommands: _taskLogger2.default.getCommands.bind(_taskLogger2.default),
+					getAllTasks: _taskLogger2.default.getAllTasks.bind(_taskLogger2.default)
+				},
+				TaskListener: {
+					subscribe: _taskListener2.default.subscribe.bind(_taskListener2.default),
+					unsubscribe: _taskListener2.default.unsubscribe.bind(_taskListener2.default)
+				}
+			};
+		}
+	}, {
+		key: 'evalFiles',
+		value: function evalFiles(options) {
+			var safeContext = this.getSafeContext();
+			this.activatedFiles.forEach(function (file) {
+				var filePath = __dirname + '/tasks/' + file + '.js';
+				var req = require(filePath);
+				var handler = req.__esModule && 'function' === typeof req.default ? req.default : req;
+				if ('function' === typeof handler) {
+					handler(options, safeContext);
+				}
+			});
+		}
+	}, {
+		key: 'register',
+		value: function register(fn) {
+			if (fn) {
+				var handler = fn.__esModule && 'function' === typeof fn.default ? fn.default : 'function' === typeof fn ? fn : null;
+				if (handler) {
+					var safeContext = this.getSafeContext();
+					handler(safeContext);
+					return this;
+				}
 			}
+			throw new TypeError('The argument must be a function!');
+		}
+	}, {
+		key: 'only',
+		value: function only(tasks) {
+			var taskList = Array.isArray(tasks) ? tasks : [tasks];
+			this.activatedFiles = UedTask.getTaskFiles(function (file) {
+				return -1 < taskList.indexOf(file);
+			});
 			return this;
 		}
 	}, {
 		key: 'ban',
-		value: function ban(taskNameList) {
-			return this._use(taskNameList, false);
-		}
-	}, {
-		key: 'only',
-		value: function only(taskNameList) {
-			return this._use(taskNameList, true);
-		}
-	}, {
-		key: 'defaultEnd',
-		value: function defaultEnd(cb) {
-			if ('function' === typeof cb) {
-				this.defaultEndCb.push(cb);
-			}
+		value: function ban(tasks) {
+			var taskList = Array.isArray(tasks) ? tasks : [tasks];
+			this.activatedFiles = UedTask.getTaskFiles(function (file) {
+				return 0 > taskList.indexOf(file);
+			});
 			return this;
 		}
 	}, {
+		key: 'createSequence',
+		value: function createSequence(gulpCommands, callback) {
+			var commands = gulpCommands.commands,
+			    tasks = gulpCommands.tasks;
+
+			var loggedCommands = _taskLogger2.default.getCommands();
+			var cb = 'function' === typeof callback ? callback : Function.prototype;
+
+			// 如果执行的任务内有命令集，动态构造之
+			if (commands.length) {
+				commands.forEach(function (command) {
+					var _loggedCommands$comma = loggedCommands[command],
+					    _loggedCommands$comma2 = _loggedCommands$comma.before,
+					    before = _loggedCommands$comma2 === undefined ? [] : _loggedCommands$comma2,
+					    _loggedCommands$comma3 = _loggedCommands$comma.main,
+					    main = _loggedCommands$comma3 === undefined ? [] : _loggedCommands$comma3,
+					    _loggedCommands$comma4 = _loggedCommands$comma.after,
+					    after = _loggedCommands$comma4 === undefined ? [] : _loggedCommands$comma4;
+					// 这里得用原始的 task() 方法，否则栈溢出
+
+					gulpTask(command, function (cb) {
+						(0, _runSequence2.default)(before, main, after, cb);
+					});
+				});
+			}
+
+			// 执行各任务
+			_runSequence2.default.apply(undefined, (0, _toConsumableArray3.default)(tasks).concat([cb]));
+		}
+	}, {
 		key: 'run',
-		value: function run(options, defaultTaskCb) {
-			var _this2 = this;
+		value: function run() {
+			var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+			var callback = arguments[1];
 
-			var args = void 0,
-			    cb = void 0;
+			var opt = options,
+			    cb = callback;
 			if ('function' === typeof options) {
-				cb = options;
-				args = {};
-			} else {
-				args = Object(options);
-				cb = defaultTaskCb;
+				var _ref = [{}, opt];
+				opt = _ref[0];
+				cb = _ref[1];
 			}
-			if (null === this.tasks) {
-				this.ban([]);
-			}
-			this.defaultEnd(cb);
-			var tasks = this.tasks,
-			    gulp = this.gulp;
 
-			tasks.forEach(function (task) {
-				return task(gulp, args, _this2);
-			});
+			if (!this.activatedFiles) {
+				this.activatedFiles = this.getTaskFiles();
+			}
+
+			// 执行被激活的各个内部脚本
+			this.evalFiles((0, _assign2.default)({}, options, _taskCommands2.default.parameters));
+			// 任务全部准备完毕
+			_taskListener2.default.emit('ready');
+			// 执行各任务
+			this.createSequence(_taskCommands2.default, cb);
 		}
 	}]);
-
-	return Task;
+	return UedTask;
 }();
 
-module.exports = new Task();
+UedTask.activatedFiles = null;
+
+
+module.exports = {
+	gulp: _gulp2.default,
+	run: UedTask.run.bind(UedTask),
+	ban: UedTask.ban.bind(UedTask),
+	only: UedTask.only.bind(UedTask),
+	register: UedTask.register.bind(UedTask)
+};

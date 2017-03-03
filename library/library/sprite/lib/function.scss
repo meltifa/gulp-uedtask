@@ -1,3 +1,4 @@
+
 @function sprite-prop($name, $property, $retina: null) {
 	$type: type-of($name);
 	@if ('map' == $type) {
@@ -20,15 +21,15 @@
 	@return map-get($name, $property);
 }
 
-@function sprite-info($dir, $prop: null, $retina: null) {
+@function sprite-info($group, $prop: null, $retina: null) {
 	@if ('string' != type-of($prop)) {
 		$retina: $prop;
-		$prop: $dir;
-		$dir: nth(map-keys($__sprite-group__), 1);
+		$prop: $group;
+		$group: nth(map-keys($__sprite-group__), 1);
 	}
 	$retina: if(null == $retina, global_variable_exists('__sprite-group-2x__'), $retina);
 	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
-	$set: map-get($set, $dir);
+	$set: map-get($set, $group);
 	$set: map-get($set, nth(map-keys($set), 1));
 	$prop: if('width' == $prop, 'total_width', $prop);
 	$prop: if('height' == $prop, 'total_height', $prop);
@@ -36,11 +37,61 @@
 }
 
 @function sprite-group($group: 'default', $retina: null) {
-	@if('bool' == type-of($group)) {
+	@if ('bool' == type-of($group)) {
 		$retina: $group;
 		$group: 'default';
 	}
 	$retina: if(null == $retina, global_variable_exists('__sprite-group-2x__'), $retina);
 	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
 	@return map-get($set, $group);
+}
+
+@mixin sprite-position($name) {
+	$x: null;
+	$y: null;
+	@if ($__sprite-is-rem__) {
+		$x: unquote(sprite-prop($name, 'x_pct') + '');
+		$y: unquote(sprite-prop($name, 'y_pct') + '');
+	} @else {
+		$x: unquote(sprite-prop($name, 'x') + 'px');
+		$y: unquote(sprite-prop($name, 'y') + 'px');
+	}
+	background-position: $x $y;
+}
+
+@mixin sprite-item($name) {
+	$slash: str-index($name, '/');
+	$dir: null;
+	@if ($slash) {
+		$dir: str-slice($name, 0, $slash - 1);
+	} @else {
+		$dir: str-index($name, '-');
+		$dir: if($dir, str-slice($dir, 0, $dir - 1), 'default');
+		$dir: if(map-has-key($__sprite-group__, $dir), $dir, 'default');
+	}
+	@extend %__sprite-group-#{$dir}__;
+	@include sprite-position($name);
+	width: unquote(sprite-prop($name, 'width') + 'px');
+	height: unquote(sprite-prop($name, 'height') + 'px');
+}
+
+$__sprite-is-loaded__: global_variable_exists('__sprite-group__') and map-has-key($__sprite-group__, nth(map-keys($__sprite-local-group__), 1));
+$__sprite-group__: map-merge(if(global_variable_exists('__sprite-group__'), $__sprite-group__, ()), $__sprite-local-group__);
+@if (global_variable_exists('__sprite-local-group-2x__')) {
+	$__sprite-group-2x__: map-merge(if(global_variable_exists('__sprite-group-2x__'), $__sprite-group-2x__, ()), $__sprite-local-group-2x__) !global;
+}
+@if (false == $__sprite-is-loaded__) {
+	@each $dir, $group in $__sprite-local-group__ {
+		%__sprite-group-#{$dir}__ {
+			$url: sprite-info($dir, 'url');
+			background-image: url($url);
+			@if (global_variable_exists('__sprite-group-2x__')) {
+				$url1x: sprite-info($dir, 'url', false);
+				$total_width: unquote(sprite-info($dir, 'width') + 'px');
+				$total_height: unquote(sprite-info($dir, 'height') + 'px');	
+				background-image: image-set(url($url1x) 1x, url($url) 2x);
+				background-size: $total_width $total_height;
+			}
+		}
+	}
 }

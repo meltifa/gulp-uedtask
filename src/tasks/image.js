@@ -4,6 +4,7 @@ import imagemin from 'gulp-imagemin';
 import pngquant from 'imagemin-pngquant';
 import mozjpeg from 'imagemin-mozjpeg';
 import gulpif from 'gulp-if';
+import del from 'del';
 
 export function createImagemin() {
 	return imagemin({
@@ -14,7 +15,7 @@ export function createImagemin() {
 	});
 }
 
-export default function(gulp, options, { browser, isBuild }) {
+export default function(options, { gulp }) {
 	gulp.task('default:image', function() {
 		return new Promise(function(resolve, reject) {
 			return setTimeout(function() {
@@ -25,14 +26,17 @@ export default function(gulp, options, { browser, isBuild }) {
 					))
 					.pipe(gulp.dest('dist'))
 					.on('end', resolve)
-					.on('error', reject)
-					.on('end', browser.reload);
+					.on('error', reject);
 			}, 500);
 		});
 	});
 
-	if(!isBuild) {
+	gulp.task('build:before:image', function() {
+		return del(['dist/img/**', 'dist/images/**']);
+	});
+
+	gulp.task('dev:after:image', function() {
 		gulp.watch('src/{img,images}/**/*.{jpg,png,gif}', ['default:image']);
-	}
+	});
 
 }

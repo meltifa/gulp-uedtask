@@ -57,17 +57,18 @@ function parseSprites(options, sprites) {
 
 function dataHandler(options, data) {
 	const css = [];
-	css.push('$__sprite-group__: map-merge(if(global_variable_exists("__sprite-group__"), $__sprite-group__, ()), ' + parseSprites(options, data.sprites) + ');');
+	css.push('$__sprite-is-rem__: ' + Boolean(options.isRem && data.retina_sprites) + ';');
+	css.push('$__sprite-local-group__: ' + parseSprites(options, data.sprites) + ';');
 	if(data.retina_sprites) {
-		css.push('$__sprite-group-2x__: map-merge(if(global_variable_exists("__sprite-group-2x__"), $__sprite-group-2x__, ()), ' + parseSprites(options, data.retina_sprites) + ');');
+		css.push('$__sprite-local-group-2x__: ' + parseSprites(options, data.retina_sprites) + ';');
 	}
-	css.push('\n\n');
 	css.push(fs.readFileSync(__dirname + '/lib/function.scss').toString());
 	return css.join('\n');
 }
 
 const defaultOptions = {
-	byDir: false
+	byDir: false,
+	isRem: false
 };
 
 module.exports = function(arg) {
@@ -76,6 +77,7 @@ module.exports = function(arg) {
 		return dataHandler(defaultOptions, data);
 	}
 	return dataHandler.bind(null, Object.defineProperties(Object.create(null), {
-		byDir: { value: Boolean(data.byDir) }
+		byDir: { value: Boolean(data.byDir) },
+		isRem: { value: Boolean(data.isRem) }
 	}));
 };

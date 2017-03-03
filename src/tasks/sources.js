@@ -2,118 +2,119 @@
 
 import fs from 'fs';
 import path from 'path';
-import del from 'del';
-import runSequence from 'run-sequence';
 import HTMLParser from 'posthtml-parser';
 import Library from '../../library';
 import postcss from 'postcss';
 import urleditor from 'postcss-url-editor';
 import { log, colors } from 'gulp-util';
 
-export default function(gulp) {
+function isLocalSource(src) {
+	return src && !/^(data|https?|about):/.test(src);
+}
 
-	gulp.task('build:clear_dist', function() {
-		return del('dist/**');
-	});
+export default function(options, { gulp }) {
+	
+	function getUrlsFromCSS(css) {
+		const urls = [];
+		String(css).replace(/url\(\s*(["']?)([^)"']+?)\1\s*\)/g, function(_, q, url) {
+			if(0 > urls.indexOf(url)) {
+				urls.push(url);
+			}
+		});
+		return urls;
+	}
 
-	gulp.task('build:clear_temp', function() {
-		return del('.temp/**');
-	});
-
-	gulp.task('build:check_sources', function() {
-
-		function getUrlsFromCSS(css) {
-			const urls = [];
-			String(css).replace(/url\(\s*(["']?)([^)"']+?)\1\s*\)/g, function(_, q, url) {
-				if(0 > urls.indexOf(url)) {
-					urls.push(url);
-				}
-			});
-			return urls;
-		}
-
-		function checkHTML(file, content, logger = []) {
-			const ast = Array.isArray(content) ? content : HTMLParser(content);
-			ast.reduce(function(logger, node) {
-				if(!node) {
-					return logger;
-				}
-				if('string' === typeof node) {
-					const exec = /^<!--([\s\S]+)-->$/.exec(node);
-					if(exec) {
-						checkHTML(file, exec[1], logger);
-					}
-					return logger;
-				}
-				const { attrs = {}, tag, content: sub } = node;
-				switch(tag) {
-					case 'img':
-						if(attrs.src) {
-							logger[attrs.src] = true;
-						} else if(attrs.srcset) {
-							attrs.srcset.split(',').reduce(function(logger, src) {
-								const exec = /\S+/.exec(src);
-								if(exec) {
-									logger[exec[0]] = true;
-								}
-								return logger;
-							}, logger);
-						}
-					break;
-					case 'script':
-						if(attrs.src) {
-							logger[attrs.src] = true;
-						}
-					break;
-					case 'link':
-						if(attrs.href) {
-							logger[attrs.href] = true;
-						}
-					break;
-					case 'style':
-						if(sub) {
-							getUrlsFromCSS(sub.shift()).reduce(function(logger, url) {
-								logger[url] = true;
-								return logger;
-							}, logger);
-						}
-					break;
-					default:
-						if(attrs.style) {
-							getUrlsFromCSS(attrs.style).reduce(function(logger, url) {
-								logger[url] = true;
-								return logger;
-							}, logger);
-						}
-						if(sub) {
-							checkHTML(file, sub, logger);
-						}
-					break;
+	function checkHTML(file, content, logger = []) {
+		const ast = Array.isArray(content) ? content : HTMLParser(content);
+		ast.reduce(function(logger, node) {
+			if(!node) {
+				return logger;
+			}
+			if('string' === typeof node) {
+				const exec = /^<!--([\s\S]+)-->$/.exec(node);
+				if(exec) {
+					checkHTML(file, exec[1], logger);
 				}
 				return logger;
-			}, logger);
+			}
+			const { attrs = {}, tag, content: sub } = node;
+			switch(tag) {
+				case 'img':
+					if(isLocalSource(attrs.src)) {
+						logger[attrs.src] = true;
+					}
+					if(attrs.srcset) {
+						attrs.srcset.split(',').reduce(function(logger, src) {
+							const exec = /\S+/.exec(src);
+							if(exec && isLocalSource(exec[0])) {
+								logger[exec[0]] = true;
+							}
+							return logger;
+						}, logger);
+					}
+				break;
+				case 'script':
+					if(isLocalSource(attrs.src)) {
+						logger[attrs.src] = true;
+					}
+				break;
+				case 'link':
+					if(attrs.href) {
+						logger[attrs.href] = true;
+					}
+				break;
+				case 'style':
+					if(sub) {
+						getUrlsFromCSS(sub.shift()).reduce(function(logger, url) {
+							if(isLocalSource(url)) {
+								logger[url] = true;
+							}
+							return logger;
+						}, logger);
+					}
+				break;
+				default:
+					if(attrs.style) {
+						getUrlsFromCSS(attrs.style).reduce(function(logger, url) {
+							if(isLocalSource(url)) {
+								logger[url] = true;
+							}
+							return logger;
+						}, logger);
+					}
+					if(sub) {
+						checkHTML(file, sub, logger);
+					}
+				break;
+			}
+			return logger;
+		}, logger);
 
-			return {
-				file,
-				sources: Object.keys(logger)
-			};
-		}
+		return {
+			file,
+			sources: Object.keys(logger)
+		};
+	}
 
-		function checkCSS(file, content) {
-			const sources = [];
-			return postcss([urleditor(function(url) {
-				if(-1 === sources.indexOf(url)) {
-					sources.push(url);
-				}
-				return url;
-			})]).process(content).then(function() {
-				return { file, sources };
-			});
-		}
+	function checkCSS(file, content) {
+		const sources = [];
+		return postcss([urleditor(function(url) {
+			if(-1 === sources.indexOf(url)) {
+				sources.push(url);
+			}
+			return url;
+		})]).process(content).then(function() {
+			return { file, sources };
+		});
+	}
 
-		const CWD = process.cwd();
-		const rootPath = CWD + '/dist';
+	const CWD = process.cwd();
+	const rootPath = CWD + '/dist';
+
+	gulp.task('build:after:sources', function() {
+
 		const distFiles = new Library(rootPath).all();
+
 		const promises = distFiles.reduce(function(pros, file) {
 			const exec = /\.(html|css)$/i.exec(file);
 			if(exec) {
@@ -190,10 +191,6 @@ export default function(gulp) {
 			}
 
 		});
-	});
-
-	gulp.task('build', function(cb) {
-		runSequence('build:clear_dist', 'default', 'build:clear_temp', 'build:check_sources', cb);
 	});
 
 }

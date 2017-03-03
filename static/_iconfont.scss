@@ -1,4 +1,4 @@
-@function iconfont-prop($name) {
+@function iconfont-item($name) {
 	@if (map-has-key($__iconfont__data, $name)) {
 		@return map-get($__iconfont__data, $name);
 	} @else {
