@@ -4,14 +4,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 exports.default = function (options, _ref) {
 	var gulp = _ref.gulp;
 
@@ -37,7 +29,7 @@ exports.default = function (options, _ref) {
 				cssTemplate: tplCreator({ byDir: true, isRem: isRem })
 			};
 			if (isRetina) {
-				(0, _assign2.default)(_conf, {
+				Object.assign(_conf, {
 					retinaImgName: '.tempsprite/sprite_' + pathname + '@2x.png',
 					retinaSrcFilter: '.tempsprite/resizer/**/*@2x.png',
 					retinaImgPath: '../' + imageDist + '/sprite' + (pathname ? '_' + pathname : '') + '@2x.png',
@@ -54,7 +46,7 @@ exports.default = function (options, _ref) {
 			cssTemplate: tplCreator({ isRem: isRem })
 		};
 		if (isRetina) {
-			(0, _assign2.default)(conf, {
+			Object.assign(conf, {
 				retinaImgName: '.tempsprite/sprite@2x.png',
 				retinaSrcFilter: '.tempsprite/resizer/*@2x.png',
 				retinaImgPath: '../' + imageDist + '/sprite@2x.png',
@@ -68,16 +60,16 @@ exports.default = function (options, _ref) {
 
 		if (isRetina) {
 			gulp.task('sprite:resizer', function () {
-				return _promise2.default.all(dirPaths.map(function (pathname) {
-					return new _promise2.default(function (resolve, reject) {
+				return Promise.all(dirPaths.map(function (pathname) {
+					return new Promise(function (resolve, reject) {
 						return gulp.src('src/asset/sprite/' + pathname + '/*.{png,jpg,gif}').pipe((0, _gulpRetinaResizer2.default)({ copy: true })).pipe(gulp.dest('.tempsprite/resizer/' + pathname)).on('end', resolve).on('error', reject);
 					});
 				}));
 			});
 
 			gulp.task('sprite:generator', ['sprite:resizer'], function () {
-				return _promise2.default.all(dirPaths.map(function (pathname) {
-					return new _promise2.default(function (resolve, reject) {
+				return Promise.all(dirPaths.map(function (pathname) {
+					return new Promise(function (resolve, reject) {
 						return gulp.src('.tempsprite/resizer/' + pathname + '/*.{png,jpg,gif}').pipe((0, _gulp2.default)(createSprite(pathname))).pipe(gulp.dest('./')).on('end', resolve).on('error', reject);
 					});
 				}));
@@ -85,8 +77,8 @@ exports.default = function (options, _ref) {
 		} else {
 
 			gulp.task('sprite:generator', function () {
-				return _promise2.default.all(dirPaths.map(function (pathname) {
-					return new _promise2.default(function (resolve, reject) {
+				return Promise.all(dirPaths.map(function (pathname) {
+					return new Promise(function (resolve, reject) {
 						return gulp.src('src/asset/sprite/' + pathname + '/*.{png,jpg,gif}').pipe((0, _gulp2.default)(createSprite(pathname))).pipe(gulp.dest('./')).on('end', resolve).on('error', reject);
 					});
 				}));
@@ -109,10 +101,14 @@ exports.default = function (options, _ref) {
 		}
 	}
 	gulp.task('default:sprite', ['sprite:generator'], function () {
-		return new _promise2.default(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			return gulp.src('.tempsprite/*.png').pipe((0, _image.createImagemin)()).pipe(gulp.dest('dist/' + imageDist)).on('end', resolve).on('error', reject);
 		}).then(function () {
-			return (0, _del2.default)('.tempsprite/**');
+			return new Promise(function (resolve, reject) {
+				setTimeout(function () {
+					return (0, _del2.default)('.tempsprite/**').then(resolve, reject);
+				}, 500);
+			});
 		});
 	});
 

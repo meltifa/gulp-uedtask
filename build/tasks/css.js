@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 exports.default = function (options, _ref) {
 	var gulp = _ref.gulp,
 	    TaskLogger = _ref.TaskLogger,
@@ -22,7 +18,7 @@ exports.default = function (options, _ref) {
 	});
 
 	var cssHandler = function cssHandler() {
-		return new _promise2.default(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			return setTimeout(function () {
 				return gulp.src('src/css/*.scss').pipe((0, _gulpSass2.default)({
 					outputStyle: outputStyle,
@@ -94,9 +90,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function getSettings(options) {
 	var isUsingRem = Boolean(options.useRem);
 	var isDividedBy2 = Boolean(options.divideBy2);
+	var isNoHash = Boolean(options.noHash);
 
 	var settings = [];
-	settings.push((0, _postcssUrlEditor2.default)('add-version?cssSrc=src&cssDest=dist&md5=true'));
+	if (!isNoHash) {
+		settings.push((0, _postcssUrlEditor2.default)('add-version?cssSrc=src&cssDest=dist&md5=true'));
+	}
 	if (isUsingRem) {
 		settings.push((0, _postcssPxtorem2.default)({
 			rootValue: 40,

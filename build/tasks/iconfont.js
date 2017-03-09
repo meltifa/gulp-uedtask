@@ -4,18 +4,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _stringify = require('babel-runtime/core-js/json/stringify');
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
-var _defineProperty = require('babel-runtime/core-js/object/define-property');
-
-var _defineProperty2 = _interopRequireDefault(_defineProperty);
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 exports.default = function (options, _ref) {
 	var gulp = _ref.gulp;
 
@@ -24,7 +12,7 @@ exports.default = function (options, _ref) {
 		try {
 			_fs2.default.accessSync(iconPath, _fs2.default.hasOwnProperty('R_OK') ? _fs2.default.R_OK : _fs2.default.constants.R_OK);
 		} catch (e) {
-			return _promise2.default.resolve();
+			return Promise.resolve();
 		}
 
 		renameSvgs();
@@ -36,13 +24,13 @@ exports.default = function (options, _ref) {
 		})).on('glyphs', function (glyphs) {
 			var pathname = _path2.default.resolve(__dirname, '../../static/_iconfont.scss');
 			var icons = glyphs.reduce(function (iconfont, glyph) {
-				return (0, _defineProperty2.default)(iconfont, glyph.name, {
+				return Object.defineProperty(iconfont, glyph.name, {
 					value: '\\' + glyph.unicode[0].charCodeAt(0).toString(16).toLowerCase(),
 					enumerable: true
 				});
 			}, {});
 			(0, _utils.mkdirSync)('src/css');
-			var content = ['$__iconfont__data: ' + (0, _stringify2.default)(icons, null, '\t').replace(/\{/g, '(').replace(/\}/g, ')').replace(/\\\\/g, '\\') + ';', _fs2.default.readFileSync(pathname).toString()].join('\n\n');
+			var content = ['$__iconfont__data: ' + JSON.stringify(icons, null, '\t').replace(/\{/g, '(').replace(/\}/g, ')').replace(/\\\\/g, '\\') + ';', _fs2.default.readFileSync(pathname).toString()].join('\n\n');
 			_fs2.default.writeFileSync('src/css/_iconfont.scss', content);
 		}).pipe(gulp.dest('dist/font'));
 	});

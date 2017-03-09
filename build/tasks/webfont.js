@@ -4,33 +4,9 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _keys = require('babel-runtime/core-js/object/keys');
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _keys2 = _interopRequireDefault(_keys);
-
-var _create = require('babel-runtime/core-js/object/create');
-
-var _create2 = _interopRequireDefault(_create);
-
-var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 exports.default = function (options, _ref5) {
 	var gulp = _ref5.gulp;
@@ -42,7 +18,7 @@ exports.default = function (options, _ref5) {
 		try {
 			_fs2.default.accessSync(baseDir, _fs2.default.hasOwnProperty('R_OK') ? _fs2.default.R_OK : _fs2.default.constants.R_OK);
 		} catch (e) {
-			return _promise2.default.resolve();
+			return Promise.resolve();
 		}
 
 		// { family: { text, font, family } }
@@ -68,11 +44,11 @@ exports.default = function (options, _ref5) {
 				}
 			}
 			return box;
-		}, (0, _create2.default)(null));
+		}, Object.create(null));
 
 		// [ { family, font: { ttf: <ttfBuffer> } } ]
 		// 遍历记录
-		return _promise2.default.all((0, _keys2.default)(srcs).reduce(function (box, key) {
+		return Promise.all(Object.keys(srcs).reduce(function (box, key) {
 			var logger = srcs[key];
 			if (logger.textFile && logger.fontFile) {
 				box.push(createPromise(logger));
@@ -82,12 +58,12 @@ exports.default = function (options, _ref5) {
 
 			(0, _utils.mkdirSync)('dist/font');
 
-			return _promise2.default.all(webfont.map(function (_ref6) {
+			return Promise.all(webfont.map(function (_ref6) {
 				var family = _ref6.family,
 				    font = _ref6.font;
 
-				return _promise2.default.all((0, _keys2.default)(font).map(function (ext) {
-					return new _promise2.default(function (resolve, reject) {
+				return Promise.all(Object.keys(font).map(function (ext) {
+					return new Promise(function (resolve, reject) {
 						return _fs2.default.writeFile('dist/font/' + family + '.' + ext, font[ext], function (e) {
 							return e ? reject(e) : resolve();
 						});
@@ -124,10 +100,12 @@ var _del2 = _interopRequireDefault(_del);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var FONT_TYPES = ['ttf', 'woff', 'eot', 'svg'];
 
 var FontCreator = function () {
-	(0, _createClass3.default)(FontCreator, null, [{
+	_createClass(FontCreator, null, [{
 		key: 'getCharCodeList',
 		value: function getCharCodeList(text) {
 			if ('string' !== typeof text) {
@@ -151,7 +129,8 @@ var FontCreator = function () {
 		    type = _ref.type,
 		    family = _ref.family,
 		    word = _ref.word;
-		(0, _classCallCheck3.default)(this, FontCreator);
+
+		_classCallCheck(this, FontCreator);
 
 		var font = _fonteditorCore.Font.create(buffer, {
 			type: type,
@@ -162,7 +141,7 @@ var FontCreator = function () {
 			combinePath: false
 		});
 		var fontObject = font.get();
-		(0, _assign2.default)(fontObject.name, {
+		Object.assign(fontObject.name, {
 			fontFamily: family,
 			fontSubFamily: family,
 			uniqueSubFamily: family,
@@ -177,7 +156,7 @@ var FontCreator = function () {
 		this.font = font;
 	}
 
-	(0, _createClass3.default)(FontCreator, [{
+	_createClass(FontCreator, [{
 		key: 'to',
 		value: function to(type) {
 			if (0 > FONT_TYPES.indexOf(type)) {
@@ -190,6 +169,7 @@ var FontCreator = function () {
 			});
 		}
 	}]);
+
 	return FontCreator;
 }();
 
@@ -199,20 +179,20 @@ function createPromise(_ref2) {
 	    family = _ref2.family,
 	    type = _ref2.type;
 
-	var readText = new _promise2.default(function (resolve, reject) {
+	var readText = new Promise(function (resolve, reject) {
 		return _fs2.default.readFile(textFile, function (e, buffer) {
 			return e ? reject(e) : resolve(buffer.toString());
 		});
 	});
 
-	var readFont = new _promise2.default(function (resolve, reject) {
+	var readFont = new Promise(function (resolve, reject) {
 		return _fs2.default.readFile(fontFile, function (e, buffer) {
 			return e ? reject(e) : resolve(buffer);
 		});
 	});
 
-	return _promise2.default.all([readText, readFont]).then(function (_ref3) {
-		var _ref4 = (0, _slicedToArray3.default)(_ref3, 2),
+	return Promise.all([readText, readFont]).then(function (_ref3) {
+		var _ref4 = _slicedToArray(_ref3, 2),
 		    word = _ref4[0],
 		    buffer = _ref4[1];
 

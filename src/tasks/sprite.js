@@ -149,7 +149,11 @@ export default function(options, { gulp }) {
 				.on('end', resolve)
 				.on('error', reject);
 		}).then(function() {
-			return del('.tempsprite/**');
+			return new Promise(function(resolve, reject) {
+				setTimeout(function() {
+					return del('.tempsprite/**').then(resolve, reject);
+				}, 500);
+			});
 		});
 	});
 

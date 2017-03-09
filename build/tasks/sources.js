@@ -4,14 +4,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
 exports.default = function (options, _ref) {
 	var gulp = _ref.gulp;
 
@@ -100,7 +92,7 @@ exports.default = function (options, _ref) {
 
 		return {
 			file: file,
-			sources: (0, _keys2.default)(logger)
+			sources: Object.keys(logger)
 		};
 	}
 
@@ -126,7 +118,7 @@ exports.default = function (options, _ref) {
 		var promises = distFiles.reduce(function (pros, file) {
 			var exec = /\.(html|css)$/i.exec(file);
 			if (exec) {
-				pros.push(new _promise2.default(function (resolve, reject) {
+				pros.push(new Promise(function (resolve, reject) {
 					return _fs2.default.readFile(file, function (err, buffer) {
 						return err ? reject(err) : resolve(buffer.toString());
 					});
@@ -139,7 +131,7 @@ exports.default = function (options, _ref) {
 			return pros;
 		}, []);
 
-		return _promise2.default.all(promises).then(function (results) {
+		return Promise.all(promises).then(function (results) {
 
 			var usedSources = [];
 			usedSources.files = {};

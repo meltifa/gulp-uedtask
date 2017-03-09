@@ -12,9 +12,12 @@ import Library from '../../library';
 function getSettings(options) {
 	const isUsingRem = Boolean(options.useRem);
 	const isDividedBy2 = Boolean(options.divideBy2);
+	const isNoHash = Boolean(options.noHash);
 
 	const settings = [];
-	settings.push(urlEditor('add-version?cssSrc=src&cssDest=dist&md5=true'));
+	if(!isNoHash) {
+		settings.push(urlEditor('add-version?cssSrc=src&cssDest=dist&md5=true'));
+	}
 	if(isUsingRem) {
 		settings.push(pxtorem({
 			rootValue: 40,

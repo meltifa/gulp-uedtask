@@ -4,18 +4,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _create = require('babel-runtime/core-js/object/create');
-
-var _create2 = _interopRequireDefault(_create);
-
-var _defineProperty = require('babel-runtime/core-js/object/define-property');
-
-var _defineProperty2 = _interopRequireDefault(_defineProperty);
-
 exports.default = function (options, _ref) {
 	var gulp = _ref.gulp;
 
@@ -98,7 +86,7 @@ function insertEntityToHTML() {
 
 	try {
 		_fs2.default.readFileSync(iconfontScssPath).toString().match(/\$__iconfont__data([\s\S]*?)\);/)[1].replace(/"([^"]+)":\s"([^"]+)",/g, function (_, name, entity) {
-			(0, _defineProperty2.default)(icons, name.toLowerCase(), {
+			Object.defineProperty(icons, name.toLowerCase(), {
 				enumerable: true,
 				value: entity.slice(1).toLowerCase()
 			});
@@ -136,6 +124,6 @@ function getHTMLDirs() {
 			obj[relative] = true;
 		}
 		return obj;
-	}, (0, _create2.default)(null));
-	return (0, _keys2.default)(logger);
+	}, Object.create(null));
+	return Object.keys(logger);
 }

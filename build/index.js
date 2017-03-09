@@ -1,24 +1,6 @@
 'use strict';
 
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _fs = require('fs');
 
@@ -45,6 +27,10 @@ var _runSequence = require('run-sequence');
 var _runSequence2 = _interopRequireDefault(_runSequence);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function isLikeStream(obj) {
 	return Boolean(obj && 'function' === typeof obj.pipe && 'function' === typeof obj.on);
@@ -74,7 +60,7 @@ _gulp2.default.task = function (name) {
 		lastArg = function lastArg() {
 			var _this = this;
 
-			return new _promise2.default(function (resolve) {
+			return new Promise(function (resolve) {
 				// 广播任务开始
 				_taskListener2.default.emit('start', name);
 				// 执行原方法
@@ -112,10 +98,10 @@ _gulp2.default.task = function (name) {
 
 var UedTask = function () {
 	function UedTask() {
-		(0, _classCallCheck3.default)(this, UedTask);
+		_classCallCheck(this, UedTask);
 	}
 
-	(0, _createClass3.default)(UedTask, null, [{
+	_createClass(UedTask, null, [{
 		key: 'getTaskFiles',
 		value: function getTaskFiles(filter) {
 			var taskFiles = _fs2.default.readdirSync(__dirname + '/tasks').reduce(function (files, task) {
@@ -217,7 +203,7 @@ var UedTask = function () {
 			}
 
 			// 执行各任务
-			_runSequence2.default.apply(undefined, (0, _toConsumableArray3.default)(tasks).concat([cb]));
+			_runSequence2.default.apply(undefined, _toConsumableArray(tasks).concat([cb]));
 		}
 	}, {
 		key: 'run',
@@ -238,13 +224,14 @@ var UedTask = function () {
 			}
 
 			// 执行被激活的各个内部脚本
-			this.evalFiles((0, _assign2.default)({}, options, _taskCommands2.default.parameters));
+			this.evalFiles(Object.assign({}, options, _taskCommands2.default.parameters));
 			// 任务全部准备完毕
 			_taskListener2.default.emit('ready');
 			// 执行各任务
 			this.createSequence(_taskCommands2.default, cb);
 		}
 	}]);
+
 	return UedTask;
 }();
 

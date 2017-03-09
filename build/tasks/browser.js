@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 exports.default = function (options, _ref) {
 	var gulp = _ref.gulp,
 	    TaskListener = _ref.TaskListener;
@@ -15,7 +11,7 @@ exports.default = function (options, _ref) {
 
 	gulp.task('dev:after:browser', function () {
 		var instance = void 0;
-		return new _promise2.default(function (resolve) {
+		return new Promise(function (resolve) {
 			instance = _browserSync2.default.init({
 				server: {
 					baseDir: 'dist',

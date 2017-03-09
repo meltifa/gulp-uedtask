@@ -3,18 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 exports.createImagemin = createImagemin;
 
 exports.default = function (options, _ref) {
 	var gulp = _ref.gulp;
 
 	gulp.task('default:image', function () {
-		return new _promise2.default(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			return setTimeout(function () {
 				return gulp.src('src/{img,images}/**/*.{jpg,png,gif}').pipe((0, _gulpIf2.default)(function (_ref2) {
 					var path = _ref2.path;

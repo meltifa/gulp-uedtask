@@ -3,29 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.MAIN_HOOK = exports.SIDE_HOOKS = exports.SORT_COMMANDS = exports.DEFAULT_COMMAND = undefined;
 
-var _defineProperty = require('babel-runtime/core-js/object/define-property');
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _defineProperty2 = _interopRequireDefault(_defineProperty);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _getIterator2 = require('babel-runtime/core-js/get-iterator');
-
-var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
-
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var DEFAULT_COMMAND = exports.DEFAULT_COMMAND = 'default';
 var SORT_COMMANDS = exports.SORT_COMMANDS = ['dev', 'build'];
@@ -34,10 +17,10 @@ var MAIN_HOOK = exports.MAIN_HOOK = 'main';
 
 var TaskLogger = function () {
 	function TaskLogger() {
-		(0, _classCallCheck3.default)(this, TaskLogger);
+		_classCallCheck(this, TaskLogger);
 	}
 
-	(0, _createClass3.default)(TaskLogger, null, [{
+	_createClass(TaskLogger, null, [{
 		key: 'getCommands',
 		value: function getCommands() {
 			return this.commandTasks;
@@ -51,7 +34,7 @@ var TaskLogger = function () {
 		key: 'addTask',
 		value: function addTask(name) {
 			var _name$split = name.split(':'),
-			    _name$split2 = (0, _slicedToArray3.default)(_name$split, 2),
+			    _name$split2 = _slicedToArray(_name$split, 2),
 			    command = _name$split2[0],
 			    hook = _name$split2[1];
 
@@ -105,11 +88,11 @@ var TaskLogger = function () {
 			var _iteratorError = undefined;
 
 			try {
-				for (var _iterator = (0, _getIterator3.default)(commands), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+				for (var _iterator = commands[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 					var command = _step.value;
 
 					if (!commandTasks.hasOwnProperty(command)) {
-						(0, _defineProperty2.default)(commandTasks, command, {
+						Object.defineProperty(commandTasks, command, {
 							enumerable: true,
 							value: {}
 						});
@@ -120,11 +103,11 @@ var TaskLogger = function () {
 					var _iteratorError2 = undefined;
 
 					try {
-						for (var _iterator2 = (0, _getIterator3.default)(hooks), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+						for (var _iterator2 = hooks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 							var hook = _step2.value;
 
 							if (!commandTask.hasOwnProperty(hook)) {
-								(0, _defineProperty2.default)(commandTask, hook, {
+								Object.defineProperty(commandTask, hook, {
 									enumerable: true,
 									value: []
 								});
@@ -165,6 +148,7 @@ var TaskLogger = function () {
 			}
 		}
 	}]);
+
 	return TaskLogger;
 }();
 
