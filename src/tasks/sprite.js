@@ -6,6 +6,7 @@ import spritesmith from 'gulp.spritesmith';
 import Library from '../../library';
 import resizer from 'gulp-retina-resizer';
 import { createImagemin } from './image';
+import { log, colors } from 'gulp-util';
 
 const CWD = process.cwd();
 const spritePath = CWD + '/src/asset/sprite/';
@@ -139,25 +140,18 @@ export default function(options, { gulp }) {
 					.pipe(gulp.dest('./'));
 			});
 		}
-		
+
 	}
 	gulp.task('default:sprite', ['sprite:generator'], function() {
-		return new Promise(function(resolve, reject) {
-			return gulp.src('.tempsprite/*.png')
-				.pipe(createImagemin())
-				.pipe(gulp.dest('dist/' + imageDist))
-				.on('end', resolve)
-				.on('error', reject);
-		}).then(function() {
-			return new Promise(function(resolve, reject) {
-				setTimeout(function() {
-					return del('.tempsprite/**').then(resolve, reject);
-				}, 500);
-			});
-		});
+		return gulp.src('.tempsprite/*.png')
+			.pipe(createImagemin())
+			.pipe(gulp.dest('dist/' + imageDist));
 	});
 
 	gulp.task('dev:after:sprite', function() {
+		del('.tempsprite/**').catch(function() {
+			return log(colors.yellow('Unable to remove `./tempsprite`, please delete it manually!'));
+		});
 		gulp.watch(['src/asset/sprite/**/*.{jpg,png,gif}'], ['default:sprite']);
 	});
 

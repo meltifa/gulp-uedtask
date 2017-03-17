@@ -2,12 +2,17 @@
 
 import browserSync from 'browser-sync';
 
-export default function(options, { gulp, TaskListener }) {
+export default function({ port }, { gulp, TaskListener }) {
+
+	const bsPort = port
+		? 'number' === typeof port ? port : Math.floor(9999 * Math.random())
+		: false;
 
 	gulp.task('dev:after:browser', function() {
-		let instance;
+		const bs = browserSync.create();
+
 		return new Promise(function(resolve) {
-			instance = browserSync.init({
+			const config = {
 				server: {
 					baseDir: 'dist',
 					directory: true,
@@ -18,9 +23,13 @@ export default function(options, { gulp, TaskListener }) {
 				},
 				open: 'external',
 				ghostMode: false
-			}, resolve);
+			};
+			if(bsPort) {
+				config.port = bsPort;
+			}
+			return bs.init(config, resolve);
 		}).then(function() {
-			TaskListener.subscribe('end', instance.reload);
+			TaskListener.subscribe('end', bs.reload);
 		});
 	});
 

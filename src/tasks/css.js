@@ -13,6 +13,7 @@ function getSettings(options) {
 	const isUsingRem = Boolean(options.useRem);
 	const isDividedBy2 = Boolean(options.divideBy2);
 	const isNoHash = Boolean(options.noHash);
+	const rootValue = parseInt(options.rootValue, 10) || 40;
 
 	const settings = [];
 	if(!isNoHash) {
@@ -20,7 +21,7 @@ function getSettings(options) {
 	}
 	if(isUsingRem) {
 		settings.push(pxtorem({
-			rootValue: 40,
+			rootValue,
 			minPixelValue: 3,
 			propWhiteList: new Library('pxtorem').use()()
 		}));

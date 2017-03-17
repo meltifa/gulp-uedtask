@@ -101,18 +101,13 @@ exports.default = function (options, _ref) {
 		}
 	}
 	gulp.task('default:sprite', ['sprite:generator'], function () {
-		return new Promise(function (resolve, reject) {
-			return gulp.src('.tempsprite/*.png').pipe((0, _image.createImagemin)()).pipe(gulp.dest('dist/' + imageDist)).on('end', resolve).on('error', reject);
-		}).then(function () {
-			return new Promise(function (resolve, reject) {
-				setTimeout(function () {
-					return (0, _del2.default)('.tempsprite/**').then(resolve, reject);
-				}, 500);
-			});
-		});
+		return gulp.src('.tempsprite/*.png').pipe((0, _image.createImagemin)()).pipe(gulp.dest('dist/' + imageDist));
 	});
 
 	gulp.task('dev:after:sprite', function () {
+		(0, _del2.default)('.tempsprite/**').catch(function () {
+			return (0, _gulpUtil.log)(_gulpUtil.colors.yellow('Unable to remove `./tempsprite`, please delete it manually!'));
+		});
 		gulp.watch(['src/asset/sprite/**/*.{jpg,png,gif}'], ['default:sprite']);
 	});
 };
@@ -138,6 +133,8 @@ var _gulpRetinaResizer = require('gulp-retina-resizer');
 var _gulpRetinaResizer2 = _interopRequireDefault(_gulpRetinaResizer);
 
 var _image = require('./image');
+
+var _gulpUtil = require('gulp-util');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

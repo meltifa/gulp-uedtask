@@ -91,6 +91,7 @@ function getSettings(options) {
 	var isUsingRem = Boolean(options.useRem);
 	var isDividedBy2 = Boolean(options.divideBy2);
 	var isNoHash = Boolean(options.noHash);
+	var rootValue = parseInt(options.rootValue, 10) || 40;
 
 	var settings = [];
 	if (!isNoHash) {
@@ -98,7 +99,7 @@ function getSettings(options) {
 	}
 	if (isUsingRem) {
 		settings.push((0, _postcssPxtorem2.default)({
-			rootValue: 40,
+			rootValue: rootValue,
 			minPixelValue: 3,
 			propWhiteList: new _library2.default('pxtorem').use()()
 		}));
