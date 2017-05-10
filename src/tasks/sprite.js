@@ -148,10 +148,13 @@ export default function(options, { gulp }) {
 			.pipe(gulp.dest('dist/' + imageDist));
 	});
 
-	gulp.task('dev:after:sprite', function() {
-		del('.tempsprite/**').catch(function() {
+	gulp.task('default:after:sprite', function() {
+		return del('.tempsprite/**').catch(function() {
 			return log(colors.yellow('Unable to remove `./tempsprite`, please delete it manually!'));
 		});
+	});
+
+	gulp.task('dev:after:sprite', function() {
 		gulp.watch(['src/asset/sprite/**/*.{jpg,png,gif}'], ['default:sprite']);
 	});
 

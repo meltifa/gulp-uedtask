@@ -136,10 +136,14 @@ export default function(options, { gulp }) {
 		}, []);
 
 		return Promise.all(promises).then(function(results) {
-
+			return new Promise(function(resolve) {
+				return setTimeout(function() {
+					return resolve(results);
+				}, 500);
+			});
+		}).then(function(results) {
 			const usedSources = [];
 			usedSources.files = {};
-
 			results.reduce(function(usedSources, result) {
 				if(!result) {
 					return usedSources;
@@ -176,7 +180,6 @@ export default function(options, { gulp }) {
 			return { usedSources, unusedSources, notFoundSources };
 
 		}).then(function({ unusedSources, notFoundSources }) {
-
 			if(unusedSources.length) {
 				log('[' + colors.yellow('Check-Sources') + '] The following files are not used:');
 				unusedSources.forEach((file, index) => console.log('  ' + (index + 1) + '. ' + path.relative(CWD, file)));
@@ -190,7 +193,7 @@ export default function(options, { gulp }) {
 				));
 			}
 
-		});
+		}).catch(console.warn)
 	});
 
 }
