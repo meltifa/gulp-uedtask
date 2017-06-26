@@ -132,10 +132,14 @@ exports.default = function (options, _ref) {
 		}, []);
 
 		return Promise.all(promises).then(function (results) {
-
+			return new Promise(function (resolve) {
+				return setTimeout(function () {
+					return resolve(results);
+				}, 500);
+			});
+		}).then(function (results) {
 			var usedSources = [];
 			usedSources.files = {};
-
 			results.reduce(function (usedSources, result) {
 				if (!result) {
 					return usedSources;
@@ -178,7 +182,6 @@ exports.default = function (options, _ref) {
 			var unusedSources = _ref3.unusedSources,
 			    notFoundSources = _ref3.notFoundSources;
 
-
 			if (unusedSources.length) {
 				(0, _gulpUtil.log)('[' + _gulpUtil.colors.yellow('Check-Sources') + '] The following files are not used:');
 				unusedSources.forEach(function (file, index) {
@@ -194,7 +197,7 @@ exports.default = function (options, _ref) {
 					return console.log('  ' + (index + 1) + '. ' + _gulpUtil.colors.yellow('Base') + ': ' + _path2.default.relative(CWD, base) + '. ' + _gulpUtil.colors.yellow('Href') + ': ' + _path2.default.relative(CWD, href));
 				});
 			}
-		});
+		}).catch(console.warn);
 	});
 };
 

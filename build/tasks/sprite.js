@@ -104,10 +104,13 @@ exports.default = function (options, _ref) {
 		return gulp.src('.tempsprite/*.png').pipe((0, _image.createImagemin)()).pipe(gulp.dest('dist/' + imageDist));
 	});
 
-	gulp.task('dev:after:sprite', function () {
-		(0, _del2.default)('.tempsprite/**').catch(function () {
+	gulp.task('default:after:sprite', function () {
+		return (0, _del2.default)('.tempsprite/**').catch(function () {
 			return (0, _gulpUtil.log)(_gulpUtil.colors.yellow('Unable to remove `./tempsprite`, please delete it manually!'));
 		});
+	});
+
+	gulp.task('dev:after:sprite', function () {
 		gulp.watch(['src/asset/sprite/**/*.{jpg,png,gif}'], ['default:sprite']);
 	});
 };

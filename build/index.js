@@ -187,6 +187,9 @@ var UedTask = function () {
 			// 如果执行的任务内有命令集，动态构造之
 			if (commands.length) {
 				commands.forEach(function (command) {
+					if ('undefined' === typeof loggedCommands[command]) {
+						throw new Error('No tasks were provided for `' + command + '` to run!');
+					}
 					var _loggedCommands$comma = loggedCommands[command],
 					    _loggedCommands$comma2 = _loggedCommands$comma.before,
 					    before = _loggedCommands$comma2 === undefined ? [] : _loggedCommands$comma2,
@@ -196,8 +199,20 @@ var UedTask = function () {
 					    after = _loggedCommands$comma4 === undefined ? [] : _loggedCommands$comma4;
 					// 这里得用原始的 task() 方法，否则栈溢出
 
-					gulpTask(command, function (cb) {
-						(0, _runSequence2.default)(before, main, after, cb);
+					var sequence = [];
+					if (after.length) {
+						sequence.unshift(after);
+					}
+					if (main.length) {
+						sequence.unshift(main);
+					}
+					if (before.length) {
+						sequence.unshift(before);
+					}
+					gulpTask(command, function (end) {
+						_runSequence2.default.apply(null, sequence.concat([function () {
+							return cb(), end();
+						}]));
 					});
 				});
 			}
