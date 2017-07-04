@@ -19,17 +19,6 @@ $LegacyIE: false !default;
     text-align: justify;
     text-justify: distribute-all-lines;
     text-align-last: justify;
-    @at-root {
-        @media screen and (-webkit-min-device-pixel-ratio: 0) {
-            &:after {
-                content: '\3000';
-                overflow: hidden;
-                display: inline-block;
-                width: 100%;
-                height: 0;
-            }
-        }
-    }
 }
 
 //文本和inline-block的两端对齐

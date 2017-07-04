@@ -10,7 +10,7 @@ module.exports = function() {
 		'border-radius', 'border-top-right-radius', 'border-top-left-radius', 'border-bottom-right-radius', 'border-bottom-left-radius',
 		'border-image', 'border-image-width', 'border-image-outset',
 		'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
-		'background', 'background-position', 'background-size',
+		'background', 'background-position', 'background-size', 'background-image',
 		'outline', 'outline-width', 'outline-offset',
 		'columns', 'column-width', 'column-rule', 'column-rule-width',
 		'flex', 'flex-basis',
