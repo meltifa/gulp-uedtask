@@ -45,7 +45,7 @@ export default function(options, { gulp, TaskLogger, TaskListener }) {
 	const cssHandler = function() {
 		return new Promise(function(resolve, reject) {
 			return setTimeout(function() {
-				return gulp.src('src/css/*.scss')
+				return gulp.src('src/css/**/*.scss')
 					.pipe(sass({
 						outputStyle,
 						includePaths: new Library('scss').cwd()

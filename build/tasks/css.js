@@ -20,7 +20,7 @@ exports.default = function (options, _ref) {
 	var cssHandler = function cssHandler() {
 		return new Promise(function (resolve, reject) {
 			return setTimeout(function () {
-				return gulp.src('src/css/*.scss').pipe((0, _gulpSass2.default)({
+				return gulp.src('src/css/**/*.scss').pipe((0, _gulpSass2.default)({
 					outputStyle: outputStyle,
 					includePaths: new _library2.default('scss').cwd()
 				})).on('error', function (e) {
