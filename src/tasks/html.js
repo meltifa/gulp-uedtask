@@ -2,6 +2,7 @@
 
 import tpl from 'gulp-html-tpl';
 import juicer from 'juicer';
+import fileIncluder from 'gulp-file-include';
 import posthtml from 'gulp-posthtml';
 import fs from 'fs';
 import del from 'del';
@@ -79,7 +80,9 @@ export default function(options, { gulp }) {
 			'src/**/*.html',
 			'!src/**/_*.html',
 			'!src/{asset,template}/**/*.html'
-		]).pipe(tpl({
+        ])
+        .pipe(fileIncluder())
+        .pipe(tpl({
 			engine: juicer,
 			data: { Math, Number, Boolean, String, Array, Object, JSON, RegExp, Date }
 		}));

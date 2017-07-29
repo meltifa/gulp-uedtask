@@ -39,7 +39,7 @@ export default function(options, { gulp }) {
 	const dirPaths = getSubDirPaths();
 	const isRetina = Boolean(options.useRetina);
 	const isRem = Boolean(options.useRem);
-	const imageDist = getImageDist();
+	const imageDist = getImageDist() + '/sprite';
 
 	function createSprite(pathname) {
 		if(pathname) {
@@ -47,7 +47,7 @@ export default function(options, { gulp }) {
 				padding: 2,
 				imgName: '.tempsprite/sprite_' + pathname + '.png',
 				imgPath: '../' + imageDist + '/sprite_' + pathname + '.png',
-				cssName: 'src/css/_sprite_' + pathname + '.scss',
+				cssName: 'src/css/sprite/_sprite_' + pathname + '.scss',
 				cssTemplate: tplCreator({ byDir: true, isRem })
 			};
 			if(isRetina) {

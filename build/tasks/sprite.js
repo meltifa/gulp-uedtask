@@ -17,7 +17,7 @@ exports.default = function (options, _ref) {
 	var dirPaths = getSubDirPaths();
 	var isRetina = Boolean(options.useRetina);
 	var isRem = Boolean(options.useRem);
-	var imageDist = getImageDist();
+	var imageDist = getImageDist() + '/sprite';
 
 	function createSprite(pathname) {
 		if (pathname) {
@@ -25,7 +25,7 @@ exports.default = function (options, _ref) {
 				padding: 2,
 				imgName: '.tempsprite/sprite_' + pathname + '.png',
 				imgPath: '../' + imageDist + '/sprite_' + pathname + '.png',
-				cssName: 'src/css/_sprite_' + pathname + '.scss',
+				cssName: 'src/css/sprite/_sprite_' + pathname + '.scss',
 				cssTemplate: tplCreator({ byDir: true, isRem: isRem })
 			};
 			if (isRetina) {

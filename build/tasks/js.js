@@ -8,19 +8,23 @@ exports.default = function (options, _ref) {
 	var gulp = _ref.gulp;
 
 
-	gulp.task('default:js', function () {
-		return gulp.src('src/js/**/*.js').pipe((0, _gulpIf2.default)(function (_ref2) {
-			var path = _ref2.path;
-			return !/\.min\.js$/i.test(path);
-		}, (0, _gulpUglify2.default)())).pipe(gulp.dest('dist/js'));
+	gulp.task('dev:js', function () {
+		return gulp.src('src/js/**/*.js').pipe(gulp.dest('dist/js'));
 	});
 
 	gulp.task('dev:after:js', function () {
-		gulp.watch('src/js/**/*.js', ['default:js']);
+		gulp.watch('src/js/**/*.js', ['dev:js']);
 	});
 
 	gulp.task('build:before:js', function () {
 		return (0, _del2.default)('dist/js/**');
+	});
+
+	gulp.task('build:js', function () {
+		return gulp.src('src/js/**/*.js').pipe((0, _gulpIf2.default)(function (_ref2) {
+			var path = _ref2.path;
+			return !/\.min\.js$/i.test(path);
+		}, (0, _gulpUglify2.default)())).pipe(gulp.dest('dist/js'));
 	});
 };
 

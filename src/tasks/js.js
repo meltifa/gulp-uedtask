@@ -6,7 +6,20 @@ import del from 'del';
 
 export default function(options, { gulp }) {
 
-	gulp.task('default:js', function() {
+	gulp.task('dev:js', function() {
+		return gulp.src('src/js/**/*.js')
+			.pipe(gulp.dest('dist/js'));
+	});
+
+	gulp.task('dev:after:js', function() {
+		gulp.watch('src/js/**/*.js', ['dev:js']);
+	});
+
+	gulp.task('build:before:js', function() {
+		return del('dist/js/**');
+	})
+
+	gulp.task('build:js', function() {
 		return gulp.src('src/js/**/*.js')
 			.pipe(gulpif(
 				({ path }) => !/\.min\.js$/i.test(path),
@@ -14,13 +27,5 @@ export default function(options, { gulp }) {
 			))
 			.pipe(gulp.dest('dist/js'));
 	});
-
-	gulp.task('dev:after:js', function() {
-		gulp.watch('src/js/**/*.js', ['default:js']);
-	});
-
-	gulp.task('build:before:js', function() {
-		return del('dist/js/**');
-	})
 
 }

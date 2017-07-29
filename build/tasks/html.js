@@ -11,7 +11,7 @@ exports.default = function (options, _ref) {
 	var insertIconfont = Boolean(options.insertIconfont);
 
 	gulp.task('default:html', function () {
-		var stream = gulp.src(['src/**/*.html', '!src/**/_*.html', '!src/{asset,template}/**/*.html']).pipe((0, _gulpHtmlTpl2.default)({
+		var stream = gulp.src(['src/**/*.html', '!src/**/_*.html', '!src/{asset,template}/**/*.html']).pipe((0, _gulpFileInclude2.default)()).pipe((0, _gulpHtmlTpl2.default)({
 			engine: _juicer2.default,
 			data: { Math: Math, Number: Number, Boolean: Boolean, String: String, Array: Array, Object: Object, JSON: JSON, RegExp: RegExp, Date: Date }
 		}));
@@ -43,6 +43,10 @@ var _gulpHtmlTpl2 = _interopRequireDefault(_gulpHtmlTpl);
 var _juicer = require('juicer');
 
 var _juicer2 = _interopRequireDefault(_juicer);
+
+var _gulpFileInclude = require('gulp-file-include');
+
+var _gulpFileInclude2 = _interopRequireDefault(_gulpFileInclude);
 
 var _gulpPosthtml = require('gulp-posthtml');
 

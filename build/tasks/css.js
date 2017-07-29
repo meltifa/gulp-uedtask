@@ -106,7 +106,7 @@ function getSettings(options) {
 	} else if (isDividedBy2) {
 		settings.push((0, _postcssPxEditor2.default)('divide-by-two?warn=true&min=3'));
 	}
-	settings.push((0, _autoprefixer2.default)(['iOS >= 7', 'last 2 versions', 'Android >= 2', 'ie >= 7', 'Firefox >= 4', 'Chrome >= 4']));
+	settings.push((0, _autoprefixer2.default)(['iOS >= 8', 'last 2 versions', 'Android >= 4', 'ie >= 9']));
 
 	return settings;
 }
