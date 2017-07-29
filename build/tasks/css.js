@@ -22,10 +22,8 @@ exports.default = function (options, _ref) {
 			return setTimeout(function () {
 				return gulp.src('src/css/**/*.scss').pipe((0, _gulpSass2.default)({
 					outputStyle: outputStyle,
-					includePaths: new _library2.default('scss').cwd()
-				})).on('error', function (e) {
-					return reject(e) && this.end();
-				}).pipe((0, _gulpPostcss2.default)(settings)).pipe(gulp.dest('dist/css')).on('end', resolve);
+					includePaths: [new _library2.default('scss').cwd(), process.cwd() + '/src/css/sprite']
+				})).on('error', _gulpSass2.default.logError).pipe((0, _gulpPostcss2.default)(settings)).pipe(gulp.dest('dist/css')).on('end', resolve);
 			}, 500);
 		}).catch(function (e) {
 			return console.warn(e.messageFormatted);

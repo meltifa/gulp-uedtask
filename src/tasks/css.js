@@ -48,11 +48,9 @@ export default function(options, { gulp, TaskLogger, TaskListener }) {
 				return gulp.src('src/css/**/*.scss')
 					.pipe(sass({
 						outputStyle,
-						includePaths: new Library('scss').cwd()
+						includePaths: [new Library('scss').cwd(), process.cwd() + '/src/css/sprite']
 					}))
-					.on('error', function(e) {
-						return reject(e) && this.end();
-					})
+					.on('error', sass.logError)
 					.pipe(postcss(settings))
 					.pipe(gulp.dest('dist/css'))
 					.on('end', resolve);
