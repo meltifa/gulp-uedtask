@@ -1,7 +1,3 @@
-[TOC]
-
-
-
 ## 起步：安装 ##
 
 全局安装：
@@ -94,7 +90,7 @@ HTML 文件内支持 Juicer 语法。主要有：
 
 而在获取并编译这个模板时，传入了以下变量：
 
-```json
+```javascript
 /*注意变量类型转换*/
 {
 	src: 'path/to/tpl.html',
@@ -406,7 +402,7 @@ REM 布局需要 JavaScript 代码配合，该代码应当放置于 HTML 的 `<h
 
 gulpfile配置：
 
-```json
+```javascript
 const task = require('gulp-uedtask');
 task.run({
 	useRetina: true
