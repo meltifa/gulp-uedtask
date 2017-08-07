@@ -1,17 +1,17 @@
-
 @function sprite-prop($name, $property, $retina: null) {
 	$type: type-of($name);
-	@if ('map' == $type) {
+	@if ('map'==$type) {
 		@return map-get($name, $property);
 	}
-	$retina: if(null == $retina, global_variable_exists('__sprite-group-2x__'), $retina);
+	$retina: if(null==$retina, global_variable_exists('__sprite-group-2x__'), $retina);
 	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
 	$slash: str-index($name, '/');
 	$group: null;
 	@if ($slash) {
 		$group: str-slice($name, 0, $slash - 1);
 		$name: str-slice($name, $slash + 1);
-	} @else {
+	}
+	@else {
 		$group: str-index($name, '-');
 		$group: if($group, str-slice($name, 0, $group - 1), 'default');
 		$group: if(map-has-key($set, $group), $group, 'default');
@@ -22,26 +22,26 @@
 }
 
 @function sprite-info($group, $prop: null, $retina: null) {
-	@if ('string' != type-of($prop)) {
+	@if ('string' !=type-of($prop)) {
 		$retina: $prop;
 		$prop: $group;
 		$group: nth(map-keys($__sprite-group__), 1);
 	}
-	$retina: if(null == $retina, global_variable_exists('__sprite-group-2x__'), $retina);
+	$retina: if(null==$retina, global_variable_exists('__sprite-group-2x__'), $retina);
 	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
 	$set: map-get($set, $group);
 	$set: map-get($set, nth(map-keys($set), 1));
-	$prop: if('width' == $prop, 'total_width', $prop);
-	$prop: if('height' == $prop, 'total_height', $prop);
+	$prop: if('width'==$prop, 'total_width', $prop);
+	$prop: if('height'==$prop, 'total_height', $prop);
 	@return map-get($set, $prop);
 }
 
 @function sprite-group($group: 'default', $retina: null) {
-	@if ('bool' == type-of($group)) {
+	@if ('bool'==type-of($group)) {
 		$retina: $group;
 		$group: 'default';
 	}
-	$retina: if(null == $retina, global_variable_exists('__sprite-group-2x__'), $retina);
+	$retina: if(null==$retina, global_variable_exists('__sprite-group-2x__'), $retina);
 	$set: if($retina, $__sprite-group-2x__, $__sprite-group__);
 	@return map-get($set, $group);
 }
@@ -52,7 +52,12 @@
 	@if ($__sprite-is-rem__) {
 		$x: unquote(sprite-prop($name, 'x_pct') + '');
 		$y: unquote(sprite-prop($name, 'y_pct') + '');
-	} @else {
+	}
+	@else if ($__sprite-only-retina__) {
+		$x: unquote(sprite-prop($name, 'x', false) + 'px');
+		$y: unquote(sprite-prop($name, 'y', false) + 'px');
+	}
+	@else {
 		$x: unquote(sprite-prop($name, 'x') + 'px');
 		$y: unquote(sprite-prop($name, 'y') + 'px');
 	}
@@ -64,15 +69,22 @@
 	$dir: null;
 	@if ($slash) {
 		$dir: str-slice($name, 0, $slash - 1);
-	} @else {
+	}
+	@else {
 		$dir: str-index($name, '-');
 		$dir: if($dir, str-slice($dir, 0, $dir - 1), 'default');
 		$dir: if(map-has-key($__sprite-group__, $dir), $dir, 'default');
 	}
 	@extend %__sprite-group-#{$dir}__;
 	@include sprite-position($name);
-	width: unquote(sprite-prop($name, 'width') + 'px');
-	height: unquote(sprite-prop($name, 'height') + 'px');
+	@if ($__sprite-only-retina__) {
+		width: unquote(sprite-prop($name, 'width', false) + 'px');
+		height: unquote(sprite-prop($name, 'height', false) + 'px');
+	}
+	@else {
+		width: unquote(sprite-prop($name, 'width') + 'px');
+		height: unquote(sprite-prop($name, 'height') + 'px');
+	}
 }
 
 $__sprite-is-loaded__: global_variable_exists('__sprite-group__') and map-has-key($__sprite-group__, nth(map-keys($__sprite-local-group__), 1));
@@ -80,16 +92,22 @@ $__sprite-group__: map-merge(if(global_variable_exists('__sprite-group__'), $__s
 @if (global_variable_exists('__sprite-local-group-2x__')) {
 	$__sprite-group-2x__: map-merge(if(global_variable_exists('__sprite-group-2x__'), $__sprite-group-2x__, ()), $__sprite-local-group-2x__) !global;
 }
-@if (false == $__sprite-is-loaded__) {
-	@each $dir, $group in $__sprite-local-group__ {
+
+@if (false==$__sprite-is-loaded__) {
+	@each $dir,
+	$group in $__sprite-local-group__ {
 		%__sprite-group-#{$dir}__ {
-			$url: sprite-info($dir, 'url');
-			background-image: url($url);
+			$fileName: sprite_ + $dir;
+			background-image: resolve($fileName + '.png');
 			@if (global_variable_exists('__sprite-group-2x__')) {
-				$url1x: sprite-info($dir, 'url', false);
+				$fileName2x: $fileName + '@2x';
 				$total_width: unquote(sprite-info($dir, 'width') + 'px');
-				$total_height: unquote(sprite-info($dir, 'height') + 'px');	
-				background-image: image-set(url($url1x) 1x, url($url) 2x);
+				$total_height: unquote(sprite-info($dir, 'height') + 'px');
+				@if ($__sprite-only-retina__) {
+					$total_width: unquote(sprite-info($dir, 'width', false) + 'px');
+					$total_height: unquote(sprite-info($dir, 'height', false) + 'px');
+				}
+				background-image: -webkit-image-set(resolve($fileName + '.png') 1x, resolve($fileName2x + '.png') 2x);
 				background-size: $total_width $total_height;
 			}
 		}

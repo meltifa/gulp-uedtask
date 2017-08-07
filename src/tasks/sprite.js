@@ -36,9 +36,11 @@ export default function(options, { gulp }) {
 		return void 0;
 	}
 
-	const dirPaths = getSubDirPaths();
+    const dirPaths = getSubDirPaths();
 	const isRetina = Boolean(options.useRetina);
-	const isRem = Boolean(options.useRem);
+    const isRem = Boolean(options.useRem);
+    const isDivideBy2 = Boolean(options.divideBy2);
+    const isOnlyRetina = !isDivideBy2 && isRetina;
 	const imageDist = getImageDist() + '/sprite';
 
 	function createSprite(pathname) {
@@ -46,15 +48,15 @@ export default function(options, { gulp }) {
 			const conf = {
 				padding: 2,
 				imgName: '.tempsprite/sprite_' + pathname + '.png',
-				imgPath: '../' + imageDist + '/sprite_' + pathname + '.png',
+				imgPath: '/' + imageDist + '/sprite_' + pathname + '.png',
 				cssName: 'src/css/sprite/_sprite_' + pathname + '.scss',
-				cssTemplate: tplCreator({ byDir: true, isRem })
+				cssTemplate: tplCreator({ byDir: true, isRem, isOnlyRetina })
 			};
 			if(isRetina) {
 				Object.assign(conf, {
 					retinaImgName: '.tempsprite/sprite_' + pathname + '@2x.png',
 					retinaSrcFilter: '.tempsprite/resizer/**/*@2x.png',
-					retinaImgPath: '../' + imageDist + '/sprite' + (pathname ? '_' + pathname : '') + '@2x.png',
+					retinaImgPath: '/' + imageDist + '/sprite' + (pathname ? '_' + pathname : '') + '@2x.png',
 					padding: 8
 				});
 			}
@@ -63,15 +65,15 @@ export default function(options, { gulp }) {
 		const conf = {
 			padding: 2,
 			imgName: '.tempsprite/sprite.png',
-			imgPath: '../' + imageDist + '/sprite.png',
-			cssName: 'src/css/_sprite.scss',
-			cssTemplate: tplCreator({ isRem })
+			imgPath: '/' + imageDist + '/sprite.png',
+			cssName: 'src/css/sprite/_sprite.scss',
+			cssTemplate: tplCreator({ isRem, isOnlyRetina })
 		};
 		if(isRetina) {
 			Object.assign(conf, {
 				retinaImgName: '.tempsprite/sprite@2x.png',
 				retinaSrcFilter: '.tempsprite/resizer/*@2x.png',
-				retinaImgPath: '../' + imageDist + '/sprite@2x.png',
+				retinaImgPath: '/' + imageDist + '/sprite@2x.png',
 				padding: 8
 			});	
 		}

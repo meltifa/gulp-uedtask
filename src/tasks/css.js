@@ -5,59 +5,81 @@ import sass from 'gulp-sass';
 import postcss from 'gulp-postcss';
 import autoprefixer from 'autoprefixer';
 import pxtorem from 'postcss-pxtorem';
+import assets from 'postcss-assets';
 import urlEditor from 'postcss-url-editor';
 import pxEditor from 'postcss-px-editor';
 import Library from '../../library';
 
 function getSettings(options) {
-	const isUsingRem = Boolean(options.useRem);
 	const isDividedBy2 = Boolean(options.divideBy2);
+	const isUsingRem = Boolean(options.useRem);
 	const isNoHash = Boolean(options.noHash);
 	const rootValue = parseInt(options.rootValue, 10) || 40;
 
 	const settings = [];
-	if(!isNoHash) {
+	if (!isNoHash) {
 		settings.push(urlEditor('add-version?cssSrc=src&cssDest=dist&md5=true'));
 	}
-	if(isUsingRem) {
+	if (isUsingRem) {
 		settings.push(pxtorem({
 			rootValue,
 			minPixelValue: 3,
 			propWhiteList: new Library('pxtorem').use()()
 		}));
-	} else if(isDividedBy2) {
+	} else if (isDividedBy2) {
 		settings.push(pxEditor('divide-by-two?warn=true&min=3'));
 	}
-	settings.push(autoprefixer(['iOS >= 8', 'last 2 versions', 'Android >= 4', 'ie >= 9']));
+	settings.push(
+		autoprefixer(['iOS >= 8', 'last 2 versions', 'Android >= 4', 'ie >= 9']),
+		assets({
+			relative: true,
+			loadPaths: ['dist/images/sprite', 'dist/img/sprite']
+		})
+	);
 
 	return settings;
 }
 
-export default function(options, { gulp, TaskLogger, TaskListener }) {
+export default function (options, {
+	gulp,
+	TaskLogger,
+	TaskListener
+}) {
 
 	const settings = getSettings(options);
 
 	let outputStyle = 'compressed';
-	gulp.task('dev:before:css', function() {
-		outputStyle = 'nested';
+	gulp.task('dev:before:css', function () {
+		outputStyle = 'expanded';
 	});
 
-	const cssHandler = function() {
-		return new Promise(function(resolve, reject) {
-			return setTimeout(function() {
-				return gulp.src('src/css/**/*.scss')
-					.pipe(sass({
-						outputStyle,
-						includePaths: [new Library('scss').cwd(), process.cwd() + '/src/css/sprite']
-					}))
-					.on('error', sass.logError)
-					.pipe(postcss(settings))
-					.pipe(gulp.dest('dist/css'))
-					.on('end', resolve);
-			}, 500);
-		}).catch(function(e) {
-			return console.warn(e.messageFormatted);
-		});
+	const cssHandler = function () {
+		return new Promise(function (resolve, reject) {
+				return setTimeout(function () {
+					return gulp.src('src/css/**/*.scss')
+						.pipe(sass({
+							outputStyle,
+							includePaths: [new Library('scss').cwd(), process.cwd() + '/src/css/sprite']
+						}))
+						.on('error', sass.logError)
+						// .pipe(postcss(settings))
+						.pipe(gulp.dest('dist/css'))
+						.on('end', resolve);
+				}, 500);
+			})
+			.then(function () {
+				return new Promise(function (resolve, reject) {
+					return setTimeout(function () {
+						return gulp.src('dist/css/**/*.css')
+							.pipe(postcss(settings))
+							.pipe(gulp.dest('dist/css'))
+							.on('end', resolve);
+					}, 500);
+				})
+			})
+			.catch(function (e) {
+				return console.warn(e.messageFormatted);
+			});
 	};
 
 	TaskListener.subscribe('ready', function initDefault() {
@@ -70,11 +92,11 @@ export default function(options, { gulp, TaskLogger, TaskListener }) {
 
 	gulp.task('css:update', cssHandler);
 
-	gulp.task('dev:after:css', function() {
+	gulp.task('dev:after:css', function () {
 		gulp.watch('src/css/**/*.scss', ['css:update']);
 	});
 
-	gulp.task('build:before:css', function() {
+	gulp.task('build:before:css', function () {
 		return del('dist/css/**');
 	});
 }

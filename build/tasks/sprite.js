@@ -17,6 +17,8 @@ exports.default = function (options, _ref) {
 	var dirPaths = getSubDirPaths();
 	var isRetina = Boolean(options.useRetina);
 	var isRem = Boolean(options.useRem);
+	var isDivideBy2 = Boolean(options.divideBy2);
+	var isOnlyRetina = !isDivideBy2 && isRetina;
 	var imageDist = getImageDist() + '/sprite';
 
 	function createSprite(pathname) {
@@ -24,15 +26,15 @@ exports.default = function (options, _ref) {
 			var _conf = {
 				padding: 2,
 				imgName: '.tempsprite/sprite_' + pathname + '.png',
-				imgPath: '../' + imageDist + '/sprite_' + pathname + '.png',
+				imgPath: '/' + imageDist + '/sprite_' + pathname + '.png',
 				cssName: 'src/css/sprite/_sprite_' + pathname + '.scss',
-				cssTemplate: tplCreator({ byDir: true, isRem: isRem })
+				cssTemplate: tplCreator({ byDir: true, isRem: isRem, isOnlyRetina: isOnlyRetina })
 			};
 			if (isRetina) {
 				Object.assign(_conf, {
 					retinaImgName: '.tempsprite/sprite_' + pathname + '@2x.png',
 					retinaSrcFilter: '.tempsprite/resizer/**/*@2x.png',
-					retinaImgPath: '../' + imageDist + '/sprite' + (pathname ? '_' + pathname : '') + '@2x.png',
+					retinaImgPath: '/' + imageDist + '/sprite' + (pathname ? '_' + pathname : '') + '@2x.png',
 					padding: 8
 				});
 			}
@@ -41,15 +43,15 @@ exports.default = function (options, _ref) {
 		var conf = {
 			padding: 2,
 			imgName: '.tempsprite/sprite.png',
-			imgPath: '../' + imageDist + '/sprite.png',
-			cssName: 'src/css/_sprite.scss',
-			cssTemplate: tplCreator({ isRem: isRem })
+			imgPath: '/' + imageDist + '/sprite.png',
+			cssName: 'src/css/sprite/_sprite.scss',
+			cssTemplate: tplCreator({ isRem: isRem, isOnlyRetina: isOnlyRetina })
 		};
 		if (isRetina) {
 			Object.assign(conf, {
 				retinaImgName: '.tempsprite/sprite@2x.png',
 				retinaSrcFilter: '.tempsprite/resizer/*@2x.png',
-				retinaImgPath: '../' + imageDist + '/sprite@2x.png',
+				retinaImgPath: '/' + imageDist + '/sprite@2x.png',
 				padding: 8
 			});
 		}

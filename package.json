@@ -1,6 +1,6 @@
 {
   "name": "gulp-uedtask",
-  "version": "2.0.7",
+  "version": "2.1.0",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -33,6 +33,7 @@
     "imagemin-pngquant": "4.2.2",
     "juicer": "0.6.14",
     "postcss": "5.2.15",
+    "postcss-assets": "4.2.0",
     "postcss-px-editor": "0.1.0",
     "postcss-pxtorem": "3.3.1",
     "postcss-url-editor": "0.3.3",

@@ -8,7 +8,7 @@ function toSCSS(data) {
 
 function parseSprites(options, sprites) {
 	const byDir = options.byDir;
-	const data = sprites.reduce(function(logger, sprite) {
+	const data = sprites.reduce(function (logger, sprite) {
 		const filename = sprite.name;
 		const width = sprite.width;
 		const height = sprite.height;
@@ -19,7 +19,7 @@ function parseSprites(options, sprites) {
 		const escaped_image = sprite.escaped_image;
 
 		let group;
-		if(byDir) {
+		if (byDir) {
 			group = sprite.source_image.replace(/\\/g, '/').match(/\/([^\/]+)\/[^\/]+$/)[1];
 		} else {
 			const hyphen = filename.indexOf('-');
@@ -27,11 +27,11 @@ function parseSprites(options, sprites) {
 		}
 		const retina = filename.indexOf('@');
 		const name = (0 < retina) ? filename.substring(0, retina) : filename;
-		if(!logger.hasOwnProperty(group)) {
+		if (!logger.hasOwnProperty(group)) {
 			logger[group] = Object.create(null);
 		}
-		const offset_x_pct = offset_x ? (offset_x/(width-total_width)*100).toFixed(4) + '%' : 0;
-		const offset_y_pct = offset_y ? (offset_y/(height-total_height)*100).toFixed(4) + '%' : 0;
+		const offset_x_pct = offset_x ? (offset_x / (width - total_width) * 100).toFixed(4) + '%' : 0;
+		const offset_y_pct = offset_y ? (offset_y / (height - total_height) * 100).toFixed(4) + '%' : 0;
 		logger[group][name] = {
 			name: name,
 			width: width,
@@ -58,8 +58,9 @@ function parseSprites(options, sprites) {
 function dataHandler(options, data) {
 	const css = [];
 	css.push('$__sprite-is-rem__: ' + Boolean(options.isRem && data.retina_sprites) + ';');
+	css.push('$__sprite-only-retina__: ' + Boolean(options.isOnlyRetina) + ';');
 	css.push('$__sprite-local-group__: ' + parseSprites(options, data.sprites) + ';');
-	if(data.retina_sprites) {
+	if (data.retina_sprites) {
 		css.push('$__sprite-local-group-2x__: ' + parseSprites(options, data.retina_sprites) + ';');
 	}
 	css.push(fs.readFileSync(__dirname + '/lib/function.scss').toString());
@@ -68,16 +69,24 @@ function dataHandler(options, data) {
 
 const defaultOptions = {
 	byDir: false,
-	isRem: false
+	isRem: false,
+	isOnlyRetina: false
 };
 
-module.exports = function(arg) {
+module.exports = function (arg) {
 	const data = Object(arg);
-	if(data.spritesheet && data.sprites) {
+	if (data.spritesheet && data.sprites) {
 		return dataHandler(defaultOptions, data);
 	}
 	return dataHandler.bind(null, Object.defineProperties(Object.create(null), {
-		byDir: { value: Boolean(data.byDir) },
-		isRem: { value: Boolean(data.isRem) }
+		byDir: {
+			value: Boolean(data.byDir)
+		},
+		isRem: {
+			value: Boolean(data.isRem)
+		},
+		isOnlyRetina: {
+			value: Boolean(data.isOnlyRetina)
+		}
 	}));
 };
