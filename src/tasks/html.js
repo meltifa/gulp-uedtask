@@ -80,7 +80,7 @@ export default function(options, { gulp }) {
 			'src/**/*.html',
 			'!src/**/_*.html',
 			'!src/{asset,template}/**/*.html'
-        ])
+		])
         .pipe(fileIncluder())
         .pipe(tpl({
 			engine: juicer,

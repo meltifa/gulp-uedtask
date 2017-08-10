@@ -9,14 +9,16 @@ import assets from 'postcss-assets';
 import urlEditor from 'postcss-url-editor';
 import pxEditor from 'postcss-px-editor';
 import Library from '../../library';
+import newer from 'gulp-newer';
 
 function getSettings(options) {
-	const isDividedBy2 = Boolean(options.divideBy2);
+	const isDivideBy2 = Boolean(options.divideBy2);
 	const isUsingRem = Boolean(options.useRem);
 	const isNoHash = Boolean(options.noHash);
 	const rootValue = parseInt(options.rootValue, 10) || 40;
 
 	const settings = [];
+
 	if (!isNoHash) {
 		settings.push(urlEditor('add-version?cssSrc=src&cssDest=dist&md5=true'));
 	}
@@ -26,7 +28,7 @@ function getSettings(options) {
 			minPixelValue: 3,
 			propWhiteList: new Library('pxtorem').use()()
 		}));
-	} else if (isDividedBy2) {
+	} else if (isDivideBy2) {
 		settings.push(pxEditor('divide-by-two?warn=true&min=3'));
 	}
 	settings.push(
@@ -57,6 +59,7 @@ export default function (options, {
 		return new Promise(function (resolve, reject) {
 				return setTimeout(function () {
 					return gulp.src('src/css/**/*.scss')
+						.pipe(newer('dist/css'))
 						.pipe(sass({
 							outputStyle,
 							includePaths: [new Library('scss').cwd(), process.cwd() + '/src/css/sprite']
@@ -65,16 +68,17 @@ export default function (options, {
 						// .pipe(postcss(settings))
 						.pipe(gulp.dest('dist/css'))
 						.on('end', resolve);
-				}, 500);
+				}, 200);
 			})
 			.then(function () {
 				return new Promise(function (resolve, reject) {
 					return setTimeout(function () {
 						return gulp.src('dist/css/**/*.css')
+							.pipe(newer('dist/css'))
 							.pipe(postcss(settings))
 							.pipe(gulp.dest('dist/css'))
 							.on('end', resolve);
-					}, 500);
+					}, 200);
 				})
 			})
 			.catch(function (e) {

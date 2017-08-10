@@ -11,7 +11,7 @@ exports.default = function (options, _ref) {
 	gulp.task('default:image', function () {
 		return new Promise(function (resolve, reject) {
 			return setTimeout(function () {
-				return gulp.src('src/{img,images}/**/*.{jpg,png,gif}').pipe((0, _gulpIf2.default)(function (_ref2) {
+				return gulp.src('src/{img,images}/**/*.{jpg,png,gif}').pipe((0, _gulpNewer2.default)('dist')).pipe((0, _gulpIf2.default)(function (_ref2) {
 					var path = _ref2.path;
 					return !/\.min\.(jpg|png|gif)$/i.test(path);
 				}, createImagemin())).pipe(gulp.dest('dist')).on('end', resolve).on('error', reject);
@@ -47,6 +47,10 @@ var _gulpIf2 = _interopRequireDefault(_gulpIf);
 var _del = require('del');
 
 var _del2 = _interopRequireDefault(_del);
+
+var _gulpNewer = require('gulp-newer');
+
+var _gulpNewer2 = _interopRequireDefault(_gulpNewer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

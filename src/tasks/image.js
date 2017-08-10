@@ -5,6 +5,7 @@ import pngquant from 'imagemin-pngquant';
 import mozjpeg from 'imagemin-mozjpeg';
 import gulpif from 'gulp-if';
 import del from 'del';
+import newer from 'gulp-newer';
 
 export function createImagemin() {
 	return imagemin({
@@ -20,6 +21,7 @@ export default function(options, { gulp }) {
 		return new Promise(function(resolve, reject) {
 			return setTimeout(function() {
 				return gulp.src('src/{img,images}/**/*.{jpg,png,gif}')
+					.pipe(newer('dist'))
 					.pipe(gulpif(
 						({ path }) => !/\.min\.(jpg|png|gif)$/i.test(path),
 						createImagemin()

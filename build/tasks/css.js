@@ -20,18 +20,18 @@ exports.default = function (options, _ref) {
 	var cssHandler = function cssHandler() {
 		return new Promise(function (resolve, reject) {
 			return setTimeout(function () {
-				return gulp.src('src/css/**/*.scss').pipe((0, _gulpSass2.default)({
+				return gulp.src('src/css/**/*.scss').pipe((0, _gulpNewer2.default)('dist/css')).pipe((0, _gulpSass2.default)({
 					outputStyle: outputStyle,
 					includePaths: [new _library2.default('scss').cwd(), process.cwd() + '/src/css/sprite']
 				})).on('error', _gulpSass2.default.logError)
 				// .pipe(postcss(settings))
 				.pipe(gulp.dest('dist/css')).on('end', resolve);
-			}, 500);
+			}, 200);
 		}).then(function () {
 			return new Promise(function (resolve, reject) {
 				return setTimeout(function () {
-					return gulp.src('dist/css/**/*.css').pipe((0, _gulpPostcss2.default)(settings)).pipe(gulp.dest('dist/css')).on('end', resolve);
-				}, 500);
+					return gulp.src('dist/css/**/*.css').pipe((0, _gulpNewer2.default)('dist/css')).pipe((0, _gulpPostcss2.default)(settings)).pipe(gulp.dest('dist/css')).on('end', resolve);
+				}, 200);
 			});
 		}).catch(function (e) {
 			return console.warn(e.messageFormatted);
@@ -95,15 +95,20 @@ var _library = require('../../library');
 
 var _library2 = _interopRequireDefault(_library);
 
+var _gulpNewer = require('gulp-newer');
+
+var _gulpNewer2 = _interopRequireDefault(_gulpNewer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getSettings(options) {
-	var isDividedBy2 = Boolean(options.divideBy2);
+	var isDivideBy2 = Boolean(options.divideBy2);
 	var isUsingRem = Boolean(options.useRem);
 	var isNoHash = Boolean(options.noHash);
 	var rootValue = parseInt(options.rootValue, 10) || 40;
 
 	var settings = [];
+
 	if (!isNoHash) {
 		settings.push((0, _postcssUrlEditor2.default)('add-version?cssSrc=src&cssDest=dist&md5=true'));
 	}
@@ -113,7 +118,7 @@ function getSettings(options) {
 			minPixelValue: 3,
 			propWhiteList: new _library2.default('pxtorem').use()()
 		}));
-	} else if (isDividedBy2) {
+	} else if (isDivideBy2) {
 		settings.push((0, _postcssPxEditor2.default)('divide-by-two?warn=true&min=3'));
 	}
 	settings.push((0, _autoprefixer2.default)(['iOS >= 8', 'last 2 versions', 'Android >= 4', 'ie >= 9']), (0, _postcssAssets2.default)({
