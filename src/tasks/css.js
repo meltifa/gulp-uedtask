@@ -65,21 +65,11 @@ export default function (options, {
 							includePaths: [new Library('scss').cwd(), process.cwd() + '/src/css/sprite']
 						}))
 						.on('error', sass.logError)
-						// .pipe(postcss(settings))
+						.pipe(gulp.dest('dist/css'))
+						.pipe(postcss(settings))
 						.pipe(gulp.dest('dist/css'))
 						.on('end', resolve);
 				}, 200);
-			})
-			.then(function () {
-				return new Promise(function (resolve, reject) {
-					return setTimeout(function () {
-						return gulp.src('dist/css/**/*.css')
-							.pipe(newer('dist/css'))
-							.pipe(postcss(settings))
-							.pipe(gulp.dest('dist/css'))
-							.on('end', resolve);
-					}, 200);
-				})
 			})
 			.catch(function (e) {
 				return console.warn(e.messageFormatted);

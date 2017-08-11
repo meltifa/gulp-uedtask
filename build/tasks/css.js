@@ -23,16 +23,8 @@ exports.default = function (options, _ref) {
 				return gulp.src('src/css/**/*.scss').pipe((0, _gulpNewer2.default)('dist/css')).pipe((0, _gulpSass2.default)({
 					outputStyle: outputStyle,
 					includePaths: [new _library2.default('scss').cwd(), process.cwd() + '/src/css/sprite']
-				})).on('error', _gulpSass2.default.logError)
-				// .pipe(postcss(settings))
-				.pipe(gulp.dest('dist/css')).on('end', resolve);
+				})).on('error', _gulpSass2.default.logError).pipe(gulp.dest('dist/css')).pipe((0, _gulpPostcss2.default)(settings)).pipe(gulp.dest('dist/css')).on('end', resolve);
 			}, 200);
-		}).then(function () {
-			return new Promise(function (resolve, reject) {
-				return setTimeout(function () {
-					return gulp.src('dist/css/**/*.css').pipe((0, _gulpNewer2.default)('dist/css')).pipe((0, _gulpPostcss2.default)(settings)).pipe(gulp.dest('dist/css')).on('end', resolve);
-				}, 200);
-			});
 		}).catch(function (e) {
 			return console.warn(e.messageFormatted);
 		});
