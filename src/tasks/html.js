@@ -9,6 +9,7 @@ import del from 'del';
 import glob from 'glob';
 import path from 'path';
 import newer from 'gulp-newer';
+import gutil from 'gulp-util';
 
 juicer.set('strip', false);
 
@@ -107,6 +108,10 @@ export default function (options, {
 		let stream = gulp.src(htmlSrc)
 			.pipe(newer('dist'))
 			.pipe(fileIncluder())
+			.on('error', function (err) {
+				gutil.log('fileIncluder Error!', err.message);
+				this.end()
+			})
 			.pipe(tpl(tplData));
 		if (insertIconfont && isUsingIconfont()) {
 			stream = stream.pipe(posthtml([insertEntityToHTML()]));
@@ -117,6 +122,10 @@ export default function (options, {
 	gulp.task('html:update', function () {
 		let stream = gulp.src(htmlSrc)
 			.pipe(fileIncluder())
+			.on('fileIncluder', function (err) {
+				gutil.log('fileIncluder Error!', err.message);
+				this.end()
+			})
 			.pipe(tpl(tplData));
 		if (insertIconfont && isUsingIconfont()) {
 			stream = stream.pipe(posthtml([insertEntityToHTML()]));

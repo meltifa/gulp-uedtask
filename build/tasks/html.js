@@ -27,7 +27,10 @@ exports.default = function (options, _ref) {
 	};
 
 	gulp.task('default:html', function () {
-		var stream = gulp.src(htmlSrc).pipe((0, _gulpNewer2.default)('dist')).pipe((0, _gulpFileInclude2.default)()).pipe((0, _gulpHtmlTpl2.default)(tplData));
+		var stream = gulp.src(htmlSrc).pipe((0, _gulpNewer2.default)('dist')).pipe((0, _gulpFileInclude2.default)()).on('error', function (err) {
+			_gulpUtil2.default.log('fileIncluder Error!', err.message);
+			this.end();
+		}).pipe((0, _gulpHtmlTpl2.default)(tplData));
 		if (insertIconfont && isUsingIconfont()) {
 			stream = stream.pipe((0, _gulpPosthtml2.default)([insertEntityToHTML()]));
 		}
@@ -35,7 +38,10 @@ exports.default = function (options, _ref) {
 	});
 
 	gulp.task('html:update', function () {
-		var stream = gulp.src(htmlSrc).pipe((0, _gulpFileInclude2.default)()).pipe((0, _gulpHtmlTpl2.default)(tplData));
+		var stream = gulp.src(htmlSrc).pipe((0, _gulpFileInclude2.default)()).on('fileIncluder', function (err) {
+			_gulpUtil2.default.log('fileIncluder Error!', err.message);
+			this.end();
+		}).pipe((0, _gulpHtmlTpl2.default)(tplData));
 		if (insertIconfont && isUsingIconfont()) {
 			stream = stream.pipe((0, _gulpPosthtml2.default)([insertEntityToHTML()]));
 		}
@@ -93,6 +99,10 @@ var _path2 = _interopRequireDefault(_path);
 var _gulpNewer = require('gulp-newer');
 
 var _gulpNewer2 = _interopRequireDefault(_gulpNewer);
+
+var _gulpUtil = require('gulp-util');
+
+var _gulpUtil2 = _interopRequireDefault(_gulpUtil);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
