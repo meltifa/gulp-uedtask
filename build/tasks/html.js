@@ -9,12 +9,33 @@ exports.default = function (options, _ref) {
 
 
 	var insertIconfont = Boolean(options.insertIconfont);
+	var htmlSrc = ['src/**/*.html', '!src/**/_*.html', '!src/{asset,template,inc}/**/*.html'];
+	var templateSrc = ['src/**/_*.html', 'src/{template,inc}/**/*.html'];
+	var tplData = {
+		engine: _juicer2.default,
+		data: {
+			Math: Math,
+			Number: Number,
+			Boolean: Boolean,
+			String: String,
+			Array: Array,
+			Object: Object,
+			JSON: JSON,
+			RegExp: RegExp,
+			Date: Date
+		}
+	};
 
 	gulp.task('default:html', function () {
-		var stream = gulp.src(['src/**/*.html', '!src/**/_*.html', '!src/{asset,template}/**/*.html']).pipe((0, _gulpFileInclude2.default)()).pipe((0, _gulpHtmlTpl2.default)({
-			engine: _juicer2.default,
-			data: { Math: Math, Number: Number, Boolean: Boolean, String: String, Array: Array, Object: Object, JSON: JSON, RegExp: RegExp, Date: Date }
-		}));
+		var stream = gulp.src(htmlSrc).pipe((0, _gulpNewer2.default)('dist')).pipe((0, _gulpFileInclude2.default)()).pipe((0, _gulpHtmlTpl2.default)(tplData));
+		if (insertIconfont && isUsingIconfont()) {
+			stream = stream.pipe((0, _gulpPosthtml2.default)([insertEntityToHTML()]));
+		}
+		return stream.pipe(gulp.dest('dist'));
+	});
+
+	gulp.task('html:update', function () {
+		var stream = gulp.src(htmlSrc).pipe((0, _gulpFileInclude2.default)()).pipe((0, _gulpHtmlTpl2.default)(tplData));
 		if (insertIconfont && isUsingIconfont()) {
 			stream = stream.pipe((0, _gulpPosthtml2.default)([insertEntityToHTML()]));
 		}
@@ -22,9 +43,10 @@ exports.default = function (options, _ref) {
 	});
 
 	gulp.task('dev:after:html', function () {
-		gulp.watch(['src/**/*.html', '!src/asset/**/*.html'], ['default:html']);
+		gulp.watch(htmlSrc, ['default:html']);
+		gulp.watch(templateSrc, ['html:update']);
 		if (insertIconfont) {
-			gulp.watch('src/css/_iconfont.scss', ['default:html']);
+			gulp.watch('src/css/_iconfont.scss', ['html:update']);
 		}
 	});
 
@@ -68,6 +90,10 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
+var _gulpNewer = require('gulp-newer');
+
+var _gulpNewer2 = _interopRequireDefault(_gulpNewer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _juicer2.default.set('strip', false);
@@ -98,7 +124,9 @@ function insertEntityToHTML() {
 	} catch (e) {}
 
 	return function (tree) {
-		tree.match({ tag: 'i' }, function (node) {
+		tree.match({
+			tag: 'i'
+		}, function (node) {
 			var attrs = node.attrs;
 			if (attrs) {
 				var classText = attrs.class;

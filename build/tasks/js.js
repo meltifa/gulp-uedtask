@@ -8,12 +8,12 @@ exports.default = function (options, _ref) {
 	var gulp = _ref.gulp;
 
 
-	gulp.task('default:js', function () {
+	gulp.task('dev:js', function () {
 		return gulp.src('src/js/**/*.js').pipe((0, _gulpNewer2.default)('dist/js')).pipe(gulp.dest('dist/js'));
 	});
 
-	gulp.task('default:after:js', function () {
-		gulp.watch('src/js/**/*.js', ['default:js']);
+	gulp.task('dev:after:js', function () {
+		gulp.watch('src/js/**/*.js', ['dev:js']);
 	});
 
 	gulp.task('build:before:js', function () {

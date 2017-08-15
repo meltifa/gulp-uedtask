@@ -17,6 +17,7 @@ function parseSprites(options, sprites) {
 		const offset_x = sprite.offset_x;
 		const offset_y = sprite.offset_y;
 		const escaped_image = sprite.escaped_image;
+		const sprite_name = escaped_image.substring(escaped_image.lastIndexOf('/') + 1);
 
 		let group;
 		if (byDir) {
@@ -30,24 +31,20 @@ function parseSprites(options, sprites) {
 		if (!logger.hasOwnProperty(group)) {
 			logger[group] = Object.create(null);
 		}
-		const offset_x_pct = offset_x ? (offset_x / (width - total_width) * 100).toFixed(4) + '%' : 0;
-		const offset_y_pct = offset_y ? (offset_y / (height - total_height) * 100).toFixed(4) + '%' : 0;
+		const offset_x_pct = offset_x ? parseFloat((offset_x / (width - total_width) * 100).toFixed(3)) + '%' : 0;
+		const offset_y_pct = offset_y ? parseFloat((offset_y / (height - total_height) * 100).toFixed(3)) + '%' : 0;
 		logger[group][name] = {
 			name: name,
 			width: width,
 			height: height,
-			offset_x: offset_x,
-			offset_y: offset_y,
 			total_width: total_width,
 			total_height: total_height,
-			escaped_image: escaped_image,
-			offset_x_pct: offset_x_pct,
-			offset_y_pct: offset_y_pct,
 			x: offset_x,
 			y: offset_y,
 			x_pct: offset_x_pct,
 			y_pct: offset_y_pct,
-			url: escaped_image
+			url: escaped_image,
+			sprite_name: sprite_name
 		};
 		return logger;
 	}, {});
