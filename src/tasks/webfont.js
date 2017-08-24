@@ -6,7 +6,8 @@ import path from 'path';
 import { mkdirSync } from '../utils';
 import del from 'del';
 
-const FONT_TYPES = ['ttf', 'woff', 'eot', 'svg'];
+const readableTypes = ['ttf', 'woff', 'eot', 'svg'];
+const writableTypes = readableTypes.slice().concat('otf');
 
 class FontCreator {
 
@@ -52,7 +53,7 @@ class FontCreator {
 	}
 
 	to(type) {
-		if(0 > FONT_TYPES.indexOf(type)) {
+		if(0 > writableTypes.indexOf(type)) {
 			throw new Error('Cannot convert to the specified type!');
 		}
 		return this.font.write({
@@ -79,7 +80,7 @@ function createPromise({ textFile, fontFile, family, type }) {
 
 	return Promise.all([readText, readFont]).then(function([ word, buffer ]) {
 		const creator = new FontCreator({ word, buffer, family, type });
-		const font = FONT_TYPES.reduce(function(box, extname) {
+		const font = writableTypes.reduce(function(box, extname) {
 			box[extname] = creator.to(extname);
 			return box;
 		}, {});
@@ -110,7 +111,7 @@ export default function(options, { gulp }) {
 					const logger = box[family] || ( box[family] = { family } );
 					if('html' === type) {
 						logger.textFile = filePath;
-					} else if(-1 < FONT_TYPES.indexOf(type)) {
+					} else if(-1 < readableTypes.indexOf(type)) {
 						logger.type = type;
 						logger.fontFile = filePath;
 					}
