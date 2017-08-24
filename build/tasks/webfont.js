@@ -37,7 +37,7 @@ exports.default = function (options, _ref5) {
 					var logger = box[family] || (box[family] = { family: family });
 					if ('html' === type) {
 						logger.textFile = filePath;
-					} else if (-1 < FONT_TYPES.indexOf(type)) {
+					} else if (-1 < readableTypes.indexOf(type)) {
 						logger.type = type;
 						logger.fontFile = filePath;
 					}
@@ -102,7 +102,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FONT_TYPES = ['ttf', 'woff', 'eot', 'svg'];
+var readableTypes = ['ttf', 'woff', 'eot', 'svg'];
+var writableTypes = readableTypes.slice().concat('otf');
 
 var FontCreator = function () {
 	_createClass(FontCreator, null, [{
@@ -159,7 +160,7 @@ var FontCreator = function () {
 	_createClass(FontCreator, [{
 		key: 'to',
 		value: function to(type) {
-			if (0 > FONT_TYPES.indexOf(type)) {
+			if (0 > writableTypes.indexOf(type)) {
 				throw new Error('Cannot convert to the specified type!');
 			}
 			return this.font.write({
@@ -197,7 +198,7 @@ function createPromise(_ref2) {
 		    buffer = _ref4[1];
 
 		var creator = new FontCreator({ word: word, buffer: buffer, family: family, type: type });
-		var font = FONT_TYPES.reduce(function (box, extname) {
+		var font = writableTypes.reduce(function (box, extname) {
 			box[extname] = creator.to(extname);
 			return box;
 		}, {});
