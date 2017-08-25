@@ -144,13 +144,13 @@ export default function(options, { gulp }) {
 		}
 
 	}
-	gulp.task('default:sprite', ['sprite:generator'], function() {
+	gulp.task('sprite:create', ['sprite:generator'], function() {
 		return gulp.src('.tempsprite/*.png')
 			.pipe(createImagemin())
 			.pipe(gulp.dest('dist/' + imageDist));
 	});
 
-	gulp.task('default:after:sprite', function() {
+	gulp.task('default:sprite', ['sprite:create'], function() {
 		return del('.tempsprite/**').catch(function() {
 			return log(colors.yellow('Unable to remove `./tempsprite`, please delete it manually!'));
 		});

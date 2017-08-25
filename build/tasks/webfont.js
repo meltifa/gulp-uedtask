@@ -102,8 +102,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var readableTypes = ['ttf', 'woff', 'eot', 'svg'];
-var writableTypes = readableTypes.slice().concat('otf');
+var writableTypes = ['ttf', 'woff', 'eot', 'svg'];
+var readableTypes = writableTypes.slice().concat('otf');
 
 var FontCreator = function () {
 	_createClass(FontCreator, null, [{

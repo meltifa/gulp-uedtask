@@ -6,8 +6,8 @@ import path from 'path';
 import { mkdirSync } from '../utils';
 import del from 'del';
 
-const readableTypes = ['ttf', 'woff', 'eot', 'svg'];
-const writableTypes = readableTypes.slice().concat('otf');
+const writableTypes = ['ttf', 'woff', 'eot', 'svg'];
+const readableTypes = writableTypes.slice().concat('otf');
 
 class FontCreator {
 

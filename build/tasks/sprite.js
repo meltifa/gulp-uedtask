@@ -102,11 +102,11 @@ exports.default = function (options, _ref) {
 			});
 		}
 	}
-	gulp.task('default:sprite', ['sprite:generator'], function () {
+	gulp.task('sprite:create', ['sprite:generator'], function () {
 		return gulp.src('.tempsprite/*.png').pipe((0, _image.createImagemin)()).pipe(gulp.dest('dist/' + imageDist));
 	});
 
-	gulp.task('default:after:sprite', function () {
+	gulp.task('default:sprite', ['sprite:create'], function () {
 		return (0, _del2.default)('.tempsprite/**').catch(function () {
 			return (0, _gulpUtil.log)(_gulpUtil.colors.yellow('Unable to remove `./tempsprite`, please delete it manually!'));
 		});
