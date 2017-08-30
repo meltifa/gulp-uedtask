@@ -1,25 +1,23 @@
-'use strict';
-
-import generator from 'gulp-iconfont';
-import path from 'path';
 import fs from 'fs';
-import { mkdirSync } from '../utils';
-import del from 'del';
+import path from 'path';
+import mkdirp from 'mkdirp';
+import generator from 'gulp-iconfont';
 
-const iconPath = process.cwd() + '/src/asset/iconfont/';
+const iconPath = path.resolve('src/asset/iconfont');
 const unicodeRE = /^u([A-Z0-9]{4})-/;
 
+// 返回所有SVG文件的文件名
 function getSvgs() {
 	return fs.readdirSync(iconPath).filter(file => /\.svg$/i.test(file));
 }
 
+// 根据现有SVG 文件的前缀获取当前已经排序的最大序列
 function getMaxUnicode() {
 	let max = 59904;
-	getSvgs().forEach(function(svg) {
-		const exec = unicodeRE.exec(svg);
-		if(exec) {
-			const index = parseInt(exec[1], 16);
-			if(index > max) {
+	getSvgs().forEach(function compare(svg) {
+		if (unicodeRE.test(svg)) {
+			const index = parseInt(RegExp.$1, 16);
+			if (index > max) {
 				max = index;
 			}
 		}
@@ -27,28 +25,35 @@ function getMaxUnicode() {
 	return max;
 }
 
+// 给还没有添加前缀的文件添加前缀
 function renameSvgs() {
-	let begin = getMaxUnicode() + 1;
-	getSvgs().forEach(function(svg) {
-		if(unicodeRE.test(svg)) {
+	let begin = getMaxUnicode();
+	getSvgs().forEach(function rename(svg) {
+		if (unicodeRE.test(svg)) {
 			return;
 		}
-		const newPath = iconPath + 'u' + begin.toString(16).toUpperCase() + '-' + svg;
+		begin += 1;
+		const newPath = path.join(iconPath, `u${begin.toString(16).toUpperCase()}-${svg}`);
 		fs.renameSync(iconPath + svg, newPath);
-		begin++;
 	});
 	return true;
 }
 
-export default function(options, { gulp }) {
+// 把对象转换成SCSS中的格式
+function toSCSSObject(obj) {
+	return JSON.stringify(obj, null, '\t')
+		.replace(/\{/g, '(')
+		.replace(/\}/g, ')')
+		.replace(/\\\\/g, '\\');
+}
 
-	gulp.task('default:iconfont', function() {
-		try {
-			fs.accessSync(iconPath, fs.hasOwnProperty('R_OK') ? fs.R_OK : fs.constants.R_OK);
-		} catch(e) {
+export default function iconfont(gulp) {
+	gulp.task('default:iconfont', function compile() {
+		// 不存在 iconfont 的目录就无需执行下面的代码了
+		if (!fs.existsSync(iconPath)) {
 			return Promise.resolve();
 		}
-
+		// 先重命名新加入的文件
 		renameSvgs();
 		return gulp.src('src/asset/iconfont/*.svg')
 			.pipe(generator({
@@ -57,31 +62,28 @@ export default function(options, { gulp }) {
 				prependUnicode: true,
 				normalize: true
 			}))
-			.on('glyphs', function(glyphs) {
-				const pathname = path.resolve(__dirname, '../../static/_iconfont.scss');
-				const icons = glyphs.reduce(function(iconfont, glyph) {
-					return Object.defineProperty(iconfont, glyph.name, {
+			.on('glyphs', function writeSCSS(glyphs) {
+				// SCSS模板
+				const tplPath = path.resolve(__dirname, '../../static/_iconfont.scss');
+				const template = fs.readFileSync(tplPath, { encoding: 'utf8' });
+				// 生成的数据
+				const icons = glyphs.reduce(function getCharCodes(fonts, glyph) {
+					return Object.defineProperty(fonts, glyph.name, {
 						value: `\\${glyph.unicode[0].charCodeAt(0).toString(16).toLowerCase()}`,
 						enumerable: true
 					});
 				}, {});
-				mkdirSync('src/css');
-				const content = [
-					'$__iconfont__data: ' + JSON.stringify(icons, null, '\t').replace(/\{/g, '(').replace(/\}/g, ')').replace(/\\\\/g, '\\') + ';',
-					fs.readFileSync(pathname).toString()
-				].join('\n\n');
-				fs.writeFileSync('src/css/_iconfont.scss', content);
+				const data = `$__iconfont__data: ${toSCSSObject(icons)};`;
+				// 确保文件夹存在
+				mkdirp.sync('src/css');
+				// 写入文件
+				fs.writeFileSync('src/css/_iconfont.scss', template.concat('\n\n', data));
 			})
 			.pipe(gulp.dest('dist/font'));
 	});
 
-	gulp.task('dev:after:iconfont', function(){
-		gulp.watch('src/asset/iconfont/*.svg', ['default:iconfont']);
+	gulp.task('dev:before:iconfont', function watch(cb) {
+		gulp.watch('src/asset/iconfont/*.svg', gulp.series('default:iconfont'));
+		return cb();
 	});
-
-	gulp.task('build:before:iconfont', function() {
-		return del('dist/font/iconfont.*');
-	});
-
-	
 }

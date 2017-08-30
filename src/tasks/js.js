@@ -1,34 +1,23 @@
-'use strict';
+// 所有配置类同 image 任务
 
 import uglify from 'gulp-uglify';
 import gulpif from 'gulp-if';
-import del from 'del';
-import newer from 'gulp-newer';
 
-export default function(options, { gulp }) {
+function isCompress({ path }) {
+	return !/\.min\.js$/i.test(path);
+}
 
-	gulp.task('dev:js', function() {
-		return gulp.src('src/js/**/*.js')
-			.pipe(newer('dist/js'))
+export default function js(gulp) {
+	const src = 'src/js/**/*.js';
+
+	gulp.task('dev:after:js', function watch(cb) {
+		gulp.watch(src, this.reload);
+		cb();
+	});
+
+	gulp.task('build:js', function compile() {
+		return gulp.src(src)
+			.pipe(gulpif(isCompress, uglify()))
 			.pipe(gulp.dest('dist/js'));
 	});
-
-	gulp.task('dev:after:js', function() {
-		gulp.watch('src/js/**/*.js', ['dev:js']);
-	});
-
-	gulp.task('build:before:js', function() {
-		return del('dist/js/**');
-	})
-
-	gulp.task('build:js', function() {
-		return gulp.src('src/js/**/*.js')
-			.pipe(newer('dist/js'))
-			.pipe(gulpif(
-				({ path }) => !/\.min\.js$/i.test(path),
-				uglify()
-			))
-			.pipe(gulp.dest('dist/js'));
-	});
-
 }

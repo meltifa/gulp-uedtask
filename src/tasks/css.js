@@ -1,96 +1,124 @@
-'use strict';
-
-import del from 'del';
+import fs from 'fs';
+import path from 'path';
 import sass from 'gulp-sass';
 import postcss from 'gulp-postcss';
 import autoprefixer from 'autoprefixer';
 import pxtorem from 'postcss-pxtorem';
-import assets from 'postcss-assets';
-import urlEditor from 'postcss-url-editor';
-import pxEditor from 'postcss-px-editor';
+import urleditor from 'postcss-url-editor';
+import pxeditor from 'postcss-px-editor';
+import Sprite from 'postcss-sprite-property';
 import Library from '../../library';
-import newer from 'gulp-newer';
+import { slash } from '../utils';
 
-function getSettings(options) {
-	const isDivideBy2 = Boolean(options.divideBy2);
-	const isUsingRem = Boolean(options.useRem);
-	const isNoHash = Boolean(options.noHash);
-	const rootValue = parseInt(options.rootValue, 10) || 40;
+// 图片文件夹名
+// 先判断是否已存在，否则默认 images
+function imgdir() {
+	const dirs = ['images', 'img'];
+	const dir = dirs.find(dirpath => fs.existsSync(path.resolve(`src/${dirpath}`)));
+	return dir || dirs.shift();
+}
 
-	const settings = [];
+export default function css(gulp) {
+	const { config, commands, emit } = this;
+	const isDevelopment = commands.indexOf('dev') > -1;
 
-	if (!isNoHash) {
-		settings.push(urlEditor('add-version?cssSrc=src&cssDest=dist&md5=true'));
+	/* 雪碧图配置 */
+	const outputdir = imgdir();
+	const sprite = new Sprite({
+		path: {
+			include: ['src/css'],
+			output: `dist/${outputdir}/sprite_[name].png`,
+			public({ input }) {
+				const parse = path.parse(input);
+				const dir = slash(parse.dir).replace(/\/src\/css\b/, '/dist/css');
+				const dest = path.resolve(`dist/${outputdir}/sprite_${parse.name}.png`);
+				return slash(path.relative(dir, dest));
+			}
+		},
+		retina: config.useRetina,
+		development: isDevelopment,
+		filter: /asset\/sprite\/.+\.png$/,
+		spritesmith: {
+			padding: config.useRetina ? 8 : 2
+		},
+		pngquant: {
+			floyd: 0.8
+		}
+	});
+
+	/* SASS选项 */
+	const sassOptions = {
+		functions: sprite.functions(),
+		outputStyle: (isDevelopment || config.minifyCSS === false) ? 'expanded' : 'compressed',
+		includePaths: [new Library('scss').cwd()]
+	};
+
+	/* PostCSS处理器 */
+	const processors = [];
+	// 1. URL查找
+	processors.push(urleditor(function findUrl(url, { from: fromUrl }) {
+		let file = path.resolve(fromUrl, '../', url);
+		// 如果(默认)从SCSS文件本身出发找不到资源
+		if (!fs.existsSync(file)) {
+			// 从CSS目录出发查找
+			file = path.resolve('./css', url);
+			if (fs.existsSync(file)) {
+				// 查找后返回相对应SCSS文件本身的路径
+				return path.relative(fromUrl, '../', file).replace(/\\/g, '/');
+			}
+		}
+		return url;
+	}));
+	// 2. 雪碧图
+	processors.push(sprite.postcss());
+	// 3. 打包的时候添加资源版本号
+	if (config.noHash !== true && !isDevelopment) {
+		processors.push(urleditor('add-version?cssSrc=src&cssDest=dist&md5=true'));
 	}
-	if (isUsingRem) {
-		settings.push(pxtorem({
-			rootValue,
+	// 4. 像素值除以2
+	if (config.divideBy2) {
+		processors.push(pxeditor('divide-by-two?warn=false&min=3'));
+	}
+	// 5. processors
+	if (config.useRem) {
+		processors.push(pxtorem({
+			rootValue: 40,
 			minPixelValue: 3,
 			propWhiteList: new Library('pxtorem').use()()
 		}));
-	} else if (isDivideBy2) {
-		settings.push(pxEditor('divide-by-two?warn=true&min=3'));
 	}
-	settings.push(
-		autoprefixer(['iOS >= 8', 'last 2 versions', 'Android >= 4', 'ie >= 9']),
-		assets({
-			relative: true,
-			loadPaths: ['dist/images/sprite', 'dist/img/sprite']
-		})
-	);
+	// 6. 添加兼容前缀
+	processors.push(autoprefixer({
+		browsers: ['iOS >= 8', 'last 2 versions', 'Android >= 4', 'ie >= 9']
+	}));
 
-	return settings;
-}
+	// 编译
+	function compile() {
+		return new Promise(function delay(resolve, reject) {
+			function onError(e) {
+				reject(e);
+				this.end();
+			}
+			// 延迟200ms避免编辑器保存时导致资源不可读而抛出错误
+			return setTimeout(function compiler() {
+				return gulp.src('src/css/**/*.scss')
+					.pipe(sass(sassOptions))
+					.on('error', onError)
+					.pipe(postcss(processors))
+					.on('error', onError)
+					.pipe(gulp.dest('dist/css'))
+					.on('end', resolve);
+			}, 200);
+		// 统一捕获错误
+		}).catch(function log(e) {
+			return emit('log', e.messageFormatted || e.message);
+		});
+	}
 
-export default function (options, {
-	gulp,
-	TaskLogger,
-	TaskListener
-}) {
-
-	const settings = getSettings(options);
-
-	let outputStyle = 'compressed';
-	gulp.task('dev:before:css', function () {
-		outputStyle = 'expanded';
-	});
-
-	const cssHandler = function () {
-		return new Promise(function (resolve, reject) {
-				return setTimeout(function () {
-					return gulp.src('src/css/**/*.scss')
-						.pipe(newer('dist/css'))
-						.pipe(sass({
-							outputStyle,
-							includePaths: [new Library('scss').cwd(), process.cwd() + '/src/css/sprite']
-						}))
-						.on('error', sass.logError)
-						.pipe(gulp.dest('dist/css'))
-						.pipe(postcss(settings))
-						.pipe(gulp.dest('dist/css'))
-						.on('end', resolve);
-				}, 200);
-			})
-			.catch(function (e) {
-				return console.warn(e.messageFormatted);
-			});
-	};
-
-	TaskListener.subscribe('ready', function initDefault() {
-		const allTasks = TaskLogger.getAllTasks();
-		const defaultDeps = ['default:sprite', 'default:image', 'default:webfont', 'default:iconfont'];
-		const dependencies = defaultDeps.filter(dep => -1 < allTasks.indexOf(dep));
-		gulp.task('default:css', dependencies, cssHandler);
-		TaskListener.unsubscribe('ready', initDefault);
-	});
-
-	gulp.task('css:update', cssHandler);
-
-	gulp.task('dev:after:css', function () {
-		gulp.watch('src/css/**/*.scss', ['css:update']);
-	});
-
-	gulp.task('build:before:css', function () {
-		return del('dist/css/**');
+	gulp.task('build:after:css', compile);
+	gulp.task('dev:after:css', function addWather() {
+		return compile().then(function watch() {
+			gulp.watch('src/css/**/*.scss', gulp.series('default:css'));
+		});
 	});
 }

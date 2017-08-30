@@ -3,30 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-
-exports.default = function (options, _ref) {
-	var gulp = _ref.gulp;
-
-
-	gulp.task('dev:js', function () {
-		return gulp.src('src/js/**/*.js').pipe((0, _gulpNewer2.default)('dist/js')).pipe(gulp.dest('dist/js'));
-	});
-
-	gulp.task('dev:after:js', function () {
-		gulp.watch('src/js/**/*.js', ['dev:js']);
-	});
-
-	gulp.task('build:before:js', function () {
-		return (0, _del2.default)('dist/js/**');
-	});
-
-	gulp.task('build:js', function () {
-		return gulp.src('src/js/**/*.js').pipe((0, _gulpNewer2.default)('dist/js')).pipe((0, _gulpIf2.default)(function (_ref2) {
-			var path = _ref2.path;
-			return !/\.min\.js$/i.test(path);
-		}, (0, _gulpUglify2.default)())).pipe(gulp.dest('dist/js'));
-	});
-};
+exports.default = js;
 
 var _gulpUglify = require('gulp-uglify');
 
@@ -36,12 +13,25 @@ var _gulpIf = require('gulp-if');
 
 var _gulpIf2 = _interopRequireDefault(_gulpIf);
 
-var _del = require('del');
-
-var _del2 = _interopRequireDefault(_del);
-
-var _gulpNewer = require('gulp-newer');
-
-var _gulpNewer2 = _interopRequireDefault(_gulpNewer);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// 所有配置类同 image 任务
+
+function isCompress(_ref) {
+	var path = _ref.path;
+
+	return !/\.min\.js$/i.test(path);
+}
+
+function js(gulp) {
+	var src = 'src/js/**/*.js';
+
+	gulp.task('dev:after:js', function watch(cb) {
+		gulp.watch(src, this.reload);
+		cb();
+	});
+
+	gulp.task('build:js', function compile() {
+		return gulp.src(src).pipe((0, _gulpIf2.default)(isCompress, (0, _gulpUglify2.default)())).pipe(gulp.dest('dist/js'));
+	});
+}

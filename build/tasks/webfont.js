@@ -4,85 +4,39 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _keys = require('babel-runtime/core-js/object/keys');
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _keys2 = _interopRequireDefault(_keys);
 
-exports.default = function (options, _ref5) {
-	var gulp = _ref5.gulp;
+var _create = require('babel-runtime/core-js/object/create');
 
+var _create2 = _interopRequireDefault(_create);
 
-	var baseDir = 'src/asset/webfont/';
+var _defineProperty = require('babel-runtime/core-js/object/define-property');
 
-	gulp.task('default:webfont', function () {
-		try {
-			_fs2.default.accessSync(baseDir, _fs2.default.hasOwnProperty('R_OK') ? _fs2.default.R_OK : _fs2.default.constants.R_OK);
-		} catch (e) {
-			return Promise.resolve();
-		}
+var _defineProperty2 = _interopRequireDefault(_defineProperty);
 
-		// { family: { text, font, family } }
-		// 读取文件夹，记录资源的文本文件、字体文件、字体名称
-		var srcs = _fs2.default.readdirSync(baseDir).reduce(function (box, file) {
-			var filePath = baseDir + file;
-			if (_fs2.default.lstatSync(filePath).isFile()) {
-				var _path$parse = _path2.default.parse(file),
-				    ext = _path$parse.ext,
-				    family = _path$parse.name;
-				// 忽略 “_” 开头的文件
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
-				if (0 !== family.indexOf('_')) {
-					var type = ext.substring(1).toLowerCase();
-					var logger = box[family] || (box[family] = { family: family });
-					if ('html' === type) {
-						logger.textFile = filePath;
-					} else if (-1 < readableTypes.indexOf(type)) {
-						logger.type = type;
-						logger.fontFile = filePath;
-					}
-				}
-			}
-			return box;
-		}, Object.create(null));
+var _promise = require('babel-runtime/core-js/promise');
 
-		// [ { family, font: { ttf: <ttfBuffer> } } ]
-		// 遍历记录
-		return Promise.all(Object.keys(srcs).reduce(function (box, key) {
-			var logger = srcs[key];
-			if (logger.textFile && logger.fontFile) {
-				box.push(createPromise(logger));
-			}
-			return box;
-		}, [])).then(function (webfont) {
+var _promise2 = _interopRequireDefault(_promise);
 
-			(0, _utils.mkdirSync)('dist/font');
+var _assign = require('babel-runtime/core-js/object/assign');
 
-			return Promise.all(webfont.map(function (_ref6) {
-				var family = _ref6.family,
-				    font = _ref6.font;
+var _assign2 = _interopRequireDefault(_assign);
 
-				return Promise.all(Object.keys(font).map(function (ext) {
-					return new Promise(function (resolve, reject) {
-						return _fs2.default.writeFile('dist/font/' + family + '.' + ext, font[ext], function (e) {
-							return e ? reject(e) : resolve();
-						});
-					});
-				}));
-			}));
-		});
-	});
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
-	gulp.task('dev:after:webfont', function () {
-		gulp.watch('src/asset/webfont/*', ['default:webfont']);
-	});
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-	gulp.task('build:before:webfont', function () {
-		return (0, _del2.default)(['dist/font/**', '!dist/font', '!dist/font/iconfont.*']);
-	});
-};
+var _createClass2 = require('babel-runtime/helpers/createClass');
 
-var _fonteditorCore = require('fonteditor-core');
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+exports.default = webfont;
 
 var _fs = require('fs');
 
@@ -92,31 +46,34 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _utils = require('../utils');
+var _mkdirp = require('mkdirp');
 
-var _del = require('del');
+var _mkdirp2 = _interopRequireDefault(_mkdirp);
 
-var _del2 = _interopRequireDefault(_del);
+var _fonteditorCore = require('fonteditor-core');
+
+var _util = require('util');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var readFile = (0, _util.promisify)(_fs2.default.readFile);
+var writeFile = (0, _util.promisify)(_fs2.default.writeFile);
 
 var writableTypes = ['ttf', 'woff', 'eot', 'svg'];
 var readableTypes = writableTypes.slice().concat('otf');
 
 var FontCreator = function () {
-	_createClass(FontCreator, null, [{
+	(0, _createClass3.default)(FontCreator, null, [{
 		key: 'getCharCodeList',
 		value: function getCharCodeList(text) {
-			if ('string' !== typeof text) {
+			if (typeof text !== 'string') {
 				return [];
 			}
-			return text.split('').reduce(function (box, word) {
+			return text.split('').reduce(function collect(box, word) {
 				var char = word.trim();
 				if (char) {
 					var charCode = word.charCodeAt();
-					if (0 > box.indexOf(charCode)) {
+					if (box.indexOf(charCode) < 0) {
 						box.push(charCode);
 					}
 				}
@@ -130,8 +87,7 @@ var FontCreator = function () {
 		    type = _ref.type,
 		    family = _ref.family,
 		    word = _ref.word;
-
-		_classCallCheck(this, FontCreator);
+		(0, _classCallCheck3.default)(this, FontCreator);
 
 		var font = _fonteditorCore.Font.create(buffer, {
 			type: type,
@@ -142,7 +98,7 @@ var FontCreator = function () {
 			combinePath: false
 		});
 		var fontObject = font.get();
-		Object.assign(fontObject.name, {
+		(0, _assign2.default)(fontObject.name, {
 			fontFamily: family,
 			fontSubFamily: family,
 			uniqueSubFamily: family,
@@ -157,11 +113,11 @@ var FontCreator = function () {
 		this.font = font;
 	}
 
-	_createClass(FontCreator, [{
+	(0, _createClass3.default)(FontCreator, [{
 		key: 'to',
 		value: function to(type) {
-			if (0 > writableTypes.indexOf(type)) {
-				throw new Error('Cannot convert to the specified type!');
+			if (writableTypes.indexOf(type) < 0) {
+				throw new Error('Cannot convert to the `' + type + '` type!');
 			}
 			return this.font.write({
 				type: type,
@@ -170,7 +126,6 @@ var FontCreator = function () {
 			});
 		}
 	}]);
-
 	return FontCreator;
 }();
 
@@ -180,28 +135,80 @@ function createPromise(_ref2) {
 	    family = _ref2.family,
 	    type = _ref2.type;
 
-	var readText = new Promise(function (resolve, reject) {
-		return _fs2.default.readFile(textFile, function (e, buffer) {
-			return e ? reject(e) : resolve(buffer.toString());
-		});
-	});
-
-	var readFont = new Promise(function (resolve, reject) {
-		return _fs2.default.readFile(fontFile, function (e, buffer) {
-			return e ? reject(e) : resolve(buffer);
-		});
-	});
-
-	return Promise.all([readText, readFont]).then(function (_ref3) {
-		var _ref4 = _slicedToArray(_ref3, 2),
+	var readText = readFile(textFile, { encoding: 'utf8' });
+	var readFont = readFile(fontFile);
+	return _promise2.default.all([readText, readFont]).then(function (_ref3) {
+		var _ref4 = (0, _slicedToArray3.default)(_ref3, 2),
 		    word = _ref4[0],
 		    buffer = _ref4[1];
 
 		var creator = new FontCreator({ word: word, buffer: buffer, family: family, type: type });
 		var font = writableTypes.reduce(function (box, extname) {
-			box[extname] = creator.to(extname);
-			return box;
+			return (0, _defineProperty2.default)(box, extname, {
+				value: creator.to(extname),
+				enumerable: true
+			});
 		}, {});
 		return { family: family, font: font };
+	});
+}
+
+function webfont(gulp) {
+	var baseDir = 'src/asset/webfont/';
+
+	gulp.task('default:webfont', function compile(cb) {
+		if (!_fs2.default.existsSync(baseDir)) {
+			return cb();
+		}
+		// { family: { text, font, family } }
+		// 读取文件夹，记录资源的文本文件、字体文件、字体名称
+		var srcs = _fs2.default.readdirSync(baseDir).reduce(function (_box, file) {
+			var box = _box;
+			var filePath = baseDir + file;
+			if (_fs2.default.lstatSync(filePath).isFile()) {
+				var _path$parse = _path2.default.parse(file),
+				    ext = _path$parse.ext,
+				    family = _path$parse.name;
+				// 忽略 “_” 开头的文件
+
+
+				if (family.indexOf('_') !== 0) {
+					var type = ext.substring(1).toLowerCase();
+					var logger = box[family] || (box[family] = { family: family });
+					if (type === 'html') {
+						logger.textFile = filePath;
+					} else if (readableTypes.indexOf(type) > -1) {
+						logger.type = type;
+						logger.fontFile = filePath;
+					}
+				}
+			}
+			return box;
+		}, (0, _create2.default)(null));
+
+		// [ { family, font: { ttf: <ttfBuffer> } } ]
+		// 遍历记录
+		return _promise2.default.all((0, _keys2.default)(srcs).reduce(function (box, key) {
+			var logger = srcs[key];
+			if (logger.textFile && logger.fontFile) {
+				box.push(createPromise(logger));
+			}
+			return box;
+		}, [])).then(function (fonts) {
+			_mkdirp2.default.sync('dist/font');
+			return _promise2.default.all(fonts.map(function eachFont(_ref5) {
+				var family = _ref5.family,
+				    font = _ref5.font;
+
+				return _promise2.default.all((0, _keys2.default)(font).map(function eachType(ext) {
+					return writeFile('dist/font/' + family + '.' + ext, font[ext]);
+				}));
+			}));
+		});
+	});
+
+	gulp.task('dev:after:webfont', function watch(cb) {
+		gulp.watch('src/asset/webfont/*', gulp.series('default:webfont'));
+		return cb();
 	});
 }
