@@ -79,6 +79,7 @@ var Registry = function (_Undertaker) {
 		key: 'bind',
 		value: function bind() {
 			this.on('log', function () {
+				// 将所有连续消息存储起来最后一波打印
 				var timer = void 0;
 				var messages = [];
 				return function log(message) {
@@ -103,6 +104,11 @@ var Registry = function (_Undertaker) {
 				};
 			}());
 		}
+
+		// 触发 reload 事件
+		// 新增文件的增删没有调起 gulp.watch 的回调
+		// 因此需要用 wather.on() 来实现回调
+
 	}, {
 		key: 'reload',
 		value: function reload(glob) {
@@ -116,6 +122,9 @@ var Registry = function (_Undertaker) {
 			watcher.on('add', emitReload);
 			watcher.on('change', emitReload);
 		}
+
+		// 只能在 setConfig 之后再调用
+
 	}, {
 		key: 'getContext',
 		value: function getContext() {
@@ -143,9 +152,13 @@ var Registry = function (_Undertaker) {
 			    emit = this.emit;
 
 			var execute = function execute() {
+				// 广播任务开始事件
 				emit('task-start', { task: task });
+				// 获取上下文要在 execute() 内部
+				// 因为注册任务的时候还没有调用 run() 来注入配置
 				var context = _this3.getContext();
 				return new _promise2.default(function wrap(resolve, reject) {
+					// 调用原本任务方法
 					var result = fn.call(context, function end(err) {
 						var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -157,6 +170,8 @@ var Registry = function (_Undertaker) {
 						}
 						return resolve();
 					});
+					// 定义任务要么返回一个 stream 或 promise
+					// 要么自己调用 cb() 来告知任务完成
 					if (result instanceof _promise2.default) {
 						result.then(resolve, reject);
 					} else if (result instanceof _stream2.default) {

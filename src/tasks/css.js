@@ -24,7 +24,7 @@ export default function css(gulp) {
 
 	/* 雪碧图配置 */
 	const outputdir = imgdir();
-	const sprite = new Sprite({
+	const spriteOptions = {
 		path: {
 			include: ['src/css', 'src/asset/sprite'],
 			output: `dist/${outputdir}/sprite_[name].png`,
@@ -38,13 +38,24 @@ export default function css(gulp) {
 		retina: config.useRetina,
 		development: isDevelopment,
 		filter: /asset\/sprite\/.+\.png$/,
+		style: {},
 		spritesmith: {
 			padding: config.useRetina ? 8 : 2
 		},
 		pngquant: {
 			floyd: 0.8
 		}
-	});
+	};
+	if (config.useRetina === 'pc') {
+		const style = spriteOptions.style;
+		style.backgroundImage = 'normal';
+		style.backgroundPosition = 'normal';
+		style.backgroundSize = 'normal';
+	}
+	if (config.useRem) {
+		spriteOptions.style.backgroundPosition = 'percent';
+	}
+	const sprite = new Sprite(spriteOptions);
 
 	/* SASS选项 */
 	const sassOptions = {

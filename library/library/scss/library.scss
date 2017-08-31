@@ -262,3 +262,31 @@ $LegacyIE: false !default;
         @extend %horizontal-vertical-center;
     }
 }
+
+@mixin sprite-item($name, $retina: true) {
+    $url: '../asset/sprite/#{$name}.png';
+    $o_width: image-width($url);
+    @if (null == $o_width) {
+        @warn 'Sprite element `#{$name}` not found!';
+    } @else {
+        $o_height: image-height($url);
+        $width: if($retina, $o_width, $o_width / 2);
+        $height: if($retina, $o_height, $o_height / 2);
+        width: $width;
+        height: $height;
+        background: url($url) 0 0 / #{$width} #{$height} no-repeat;
+    }
+}
+
+@mixin sprite-position($name, $retina: true) {
+    $url: '../asset/sprite/#{$name}.png';
+    $o_width: image-width($url);
+    @if (null == $o_width) {
+        @warn 'Sprite element `#{$name}` not found!';
+    } @else {
+        $o_height: image-height($url);
+        $width: if($retina, $o_width, $o_width / 2);
+        $height: if($retina, $o_height, $o_height / 2);
+        background: url($url) 0 0 / #{$width} #{$height} no-repeat;
+    }
+}

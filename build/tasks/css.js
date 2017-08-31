@@ -73,7 +73,7 @@ function css(gulp) {
 
 	/* 雪碧图配置 */
 	var outputdir = imgdir();
-	var sprite = new _postcssSpriteProperty2.default({
+	var spriteOptions = {
 		path: {
 			include: ['src/css', 'src/asset/sprite'],
 			output: 'dist/' + outputdir + '/sprite_[name].png',
@@ -89,13 +89,24 @@ function css(gulp) {
 		retina: config.useRetina,
 		development: isDevelopment,
 		filter: /asset\/sprite\/.+\.png$/,
+		style: {},
 		spritesmith: {
 			padding: config.useRetina ? 8 : 2
 		},
 		pngquant: {
 			floyd: 0.8
 		}
-	});
+	};
+	if (config.useRetina === 'pc') {
+		var style = spriteOptions.style;
+		style.backgroundImage = 'normal';
+		style.backgroundPosition = 'normal';
+		style.backgroundSize = 'normal';
+	}
+	if (config.useRem) {
+		spriteOptions.style.backgroundPosition = 'percent';
+	}
+	var sprite = new _postcssSpriteProperty2.default(spriteOptions);
 
 	/* SASS选项 */
 	var sassOptions = {
