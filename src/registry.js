@@ -22,20 +22,30 @@ export default class Registry extends Undertaker {
 	}
 
 	bind() {
-		this.on('log', throttle((message) => {
-			if (message) {
-				/*eslint-disable*/
-				if (message.title) {
-					console.log(`\x1b[31m${message.title}\x1b[0m`);
-					if (message.content) {
-						console.log(message.content);
-					}
-				} else {
-					console.log(message);
-				}
-				/*eslint-enable*/
-			}
-		}), 500);
+		this.on('log', (() => {
+			let timer;
+			const messages = [];
+			return function log(message) {
+				messages.push(message);
+				clearTimeout(timer);
+				timer = setTimeout(function delay() {
+					messages.splice(0).forEach(function print(msg) {
+						if (msg) {
+							/* eslint-disable no-console */
+							if (msg.title) {
+								console.warn(`\x1b[31m${msg.title}\x1b[0m`);
+								if (msg.content) {
+									console.warn(msg.content);
+								}
+							} else {
+								console.warn(msg);
+							}
+							/* eslint-enable no-console */
+						}
+					});
+				}, 500);
+			};
+		})());
 	}
 
 	reload(...args) {
