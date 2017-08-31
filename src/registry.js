@@ -22,6 +22,7 @@ export default class Registry extends Undertaker {
 
 	bind() {
 		this.on('log', (() => {
+			// 将所有连续消息存储起来最后一波打印
 			let timer;
 			const messages = [];
 			return function log(message) {
@@ -47,6 +48,9 @@ export default class Registry extends Undertaker {
 		})());
 	}
 
+	// 触发 reload 事件
+	// 新增文件的增删没有调起 gulp.watch 的回调
+	// 因此需要用 wather.on() 来实现回调
 	reload(glob) {
 		const watcher = gulp.watch(glob);
 		const emitReload = () => this.emit('reload');
@@ -55,6 +59,7 @@ export default class Registry extends Undertaker {
 		watcher.on('change', emitReload);
 	}
 
+	// 只能在 setConfig 之后再调用
 	getContext() {
 		return {
 			on: this.on,
@@ -74,9 +79,13 @@ export default class Registry extends Undertaker {
 	set(task, fn) {
 		const { _tasks, emit } = this;
 		const execute = () => {
+			// 广播任务开始事件
 			emit('task-start', { task });
+			// 获取上下文要在 execute() 内部
+			// 因为注册任务的时候还没有调用 run() 来注入配置
 			const context = this.getContext();
 			return new Promise(function wrap(resolve, reject) {
+				// 调用原本任务方法
 				const result = fn.call(context, function end(err, payload = {}) {
 					if (err) {
 						return reject(err);
@@ -86,6 +95,8 @@ export default class Registry extends Undertaker {
 					}
 					return resolve();
 				});
+				// 定义任务要么返回一个 stream 或 promise
+				// 要么自己调用 cb() 来告知任务完成
 				if (result instanceof Promise) {
 					result.then(resolve, reject);
 				} else if (result instanceof Stream) {

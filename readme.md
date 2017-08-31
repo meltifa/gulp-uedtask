@@ -3,14 +3,15 @@
 全局安装：
 
 ```
-> npm install -g gulp gm
+> npm install -g gulpjs/gulp#4.0 gm
 ```
 
 项目本地安装：
 
-	> npm install --save-dev gulp gulp-uedtask
-
+	> npm install --save-dev gulpjs/gulp#4.0 meltifa/gulp-uedtask#gulp4
 软件程序安装：http://www.graphicsmagick.org/
+
+
 
 ## 一、HTML ##
 
@@ -296,10 +297,10 @@ REM 布局需要 JavaScript 代码配合，该代码应当放置于 HTML 的 `<h
     - `name`: 原图片名（无 `@2x` 和后缀）
      - `width`: 宽（无单位）
      - `height`: 高（无单位）
-     -  `x`: 在雪碧图中的水平偏移（无单位）
-     -  `x_pct`: 在雪碧图中的水平偏移（单位：百分比）
-     -  `y`: 在雪碧图中的垂直偏移（无单位）
-     -  `y_pct`: 在雪碧图中的垂直偏移（单位：百分比）
+     - `x`: 在雪碧图中的水平偏移（无单位）
+     - `x_pct`: 在雪碧图中的水平偏移（单位：百分比）
+     - `y`: 在雪碧图中的垂直偏移（无单位）
+     - `y_pct`: 在雪碧图中的垂直偏移（单位：百分比）
      - `url`: 雪碧图地址
      - `total_width`: 雪碧图总宽度（无单位）
      - `total_height`: 雪碧图总高度（无单位）
