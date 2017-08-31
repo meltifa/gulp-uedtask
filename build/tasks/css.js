@@ -163,9 +163,16 @@ function css(gulp) {
 	}
 
 	gulp.task('build:after:css', compile);
+	gulp.task('css:update', compile);
 	gulp.task('dev:after:css', function addWather() {
 		return compile().then(function watch() {
-			gulp.watch('src/css/**/*.scss', gulp.series('default:css'));
+			gulp.watch('src/css/**/*.scss', gulp.series('css:update'));
 		});
 	});
+	// 当然是可以写成下面这样
+	// 但这样一来执行的任务多出一个 `watch` 显示
+	// gulp.task('dev:after:css', gulp.series('css:update', function watch(cb) {
+	// 	gulp.watch('src/css/**/*.scss', gulp.series('css:update'));
+	// 	return cb();
+	// }));
 }
