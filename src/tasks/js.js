@@ -11,7 +11,7 @@ export default function js(gulp) {
 	const src = 'src/js/**/*.js';
 
 	gulp.task('dev:after:js', function watch(cb) {
-		gulp.watch(src, this.reload);
+		this.reload(src);
 		cb();
 	});
 

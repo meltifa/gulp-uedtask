@@ -75,7 +75,7 @@ function css(gulp) {
 	var outputdir = imgdir();
 	var sprite = new _postcssSpriteProperty2.default({
 		path: {
-			include: ['src/css'],
+			include: ['src/css', 'src/asset/sprite'],
 			output: 'dist/' + outputdir + '/sprite_[name].png',
 			public: function _public(_ref) {
 				var input = _ref.input;

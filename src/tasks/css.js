@@ -26,7 +26,7 @@ export default function css(gulp) {
 	const outputdir = imgdir();
 	const sprite = new Sprite({
 		path: {
-			include: ['src/css'],
+			include: ['src/css', 'src/asset/sprite'],
 			output: `dist/${outputdir}/sprite_[name].png`,
 			public({ input }) {
 				const parse = path.parse(input);

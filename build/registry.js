@@ -50,11 +50,10 @@ var _gulp = require('gulp');
 
 var _gulp2 = _interopRequireDefault(_gulp);
 
-var _utils = require('./utils');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/*eslint-disable*/
+/* eslint-enable import/no-extraneous-dependencies */
+
 var Registry = function (_Undertaker) {
 	(0, _inherits3.default)(Registry, _Undertaker);
 
@@ -106,12 +105,16 @@ var Registry = function (_Undertaker) {
 		}
 	}, {
 		key: 'reload',
-		value: function reload() {
-			for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-				args[_key] = arguments[_key];
-			}
+		value: function reload(glob) {
+			var _this2 = this;
 
-			this.emit.apply(this, ['reload'].concat(args));
+			var watcher = _gulp2.default.watch(glob);
+			var emitReload = function emitReload() {
+				return _this2.emit('reload');
+			};
+			watcher.on('unlink', emitReload);
+			watcher.on('add', emitReload);
+			watcher.on('change', emitReload);
 		}
 	}, {
 		key: 'getContext',
@@ -134,14 +137,14 @@ var Registry = function (_Undertaker) {
 	}, {
 		key: 'set',
 		value: function set(task, fn) {
-			var _this2 = this;
+			var _this3 = this;
 
 			var _tasks = this._tasks,
 			    emit = this.emit;
 
 			var execute = function execute() {
 				emit('task-start', { task: task });
-				var context = _this2.getContext();
+				var context = _this3.getContext();
 				return new _promise2.default(function wrap(resolve, reject) {
 					var result = fn.call(context, function end(err) {
 						var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -171,7 +174,7 @@ var Registry = function (_Undertaker) {
 	}]);
 	return Registry;
 }(_undertakerRegistry2.default);
-/*eslint-enable*/
+/* eslint-disable import/no-extraneous-dependencies */
 
 
 exports.default = Registry;

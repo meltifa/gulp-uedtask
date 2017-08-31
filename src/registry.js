@@ -1,10 +1,9 @@
 import Undertaker from 'undertaker-registry';
 import { EventEmitter } from 'events';
 import Stream from 'stream';
-/*eslint-disable*/
+/* eslint-disable import/no-extraneous-dependencies */
 import gulp from 'gulp';
-/*eslint-enable*/
-import { throttle } from './utils';
+/* eslint-enable import/no-extraneous-dependencies */
 
 export default class Registry extends Undertaker {
 	constructor(options) {
@@ -48,8 +47,12 @@ export default class Registry extends Undertaker {
 		})());
 	}
 
-	reload(...args) {
-		this.emit('reload', ...args);
+	reload(glob) {
+		const watcher = gulp.watch(glob);
+		const emitReload = () => this.emit('reload');
+		watcher.on('unlink', emitReload);
+		watcher.on('add', emitReload);
+		watcher.on('change', emitReload);
 	}
 
 	getContext() {

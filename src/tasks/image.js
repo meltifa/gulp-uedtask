@@ -26,7 +26,7 @@ export default function image(gulp) {
 	// dev 阶段图片的预览通过 browser-sync 代理完成
 	// 这里只需要监听 src 目录图片来刷新浏览器即可
 	gulp.task('dev:after:image', function watch(cb) {
-		gulp.watch(src, this.reload);
+		this.reload(src);
 		return cb();
 	});
 }
