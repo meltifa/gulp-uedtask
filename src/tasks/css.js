@@ -27,11 +27,11 @@ export default function css(gulp) {
 	const spriteOptions = {
 		path: {
 			include: ['src/css', 'src/asset/sprite'],
-			output: `dist/${outputdir}/sprite_[name].png`,
+			output: `dist/${outputdir}/sprite/[name].png`,
 			public({ input }) {
 				const parse = path.parse(input);
 				const dir = slash(parse.dir).replace(/\/src\/css\b/, '/dist/css');
-				const dest = path.resolve(`dist/${outputdir}/sprite_${parse.name}.png`);
+				const dest = path.resolve(`dist/${outputdir}/sprite/${parse.name}.png`);
 				return slash(path.relative(dir, dest));
 			}
 		},

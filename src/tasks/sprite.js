@@ -14,10 +14,7 @@ export default function sprite(gulp) {
 		};
 	}
 
-	// 显示在控制台还是下划线比较好看
-	/* eslint-disable camelcase */
-	async function sprite_resizer(filepath) {
-	/* eslint-enable camelcase */
+	async function resize(filepath) {
 		const file = path.resolve(filepath);
 		let handler = gm(file);
 		const { width, height } = await new Promise((succ, fail) => handler.size(end(succ, fail)));
@@ -33,8 +30,8 @@ export default function sprite(gulp) {
 
 	gulp.task('dev:after:sprite:resize', function watch(cb) {
 		const watcher = gulp.watch('src/asset/sprite/**/*.png');
-		watcher.on('add', sprite_resizer);
-		watcher.on('change', sprite_resizer);
+		watcher.on('add', resize);
+		watcher.on('change', resize);
 		return cb();
 	});
 }

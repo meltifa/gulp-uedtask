@@ -38,6 +38,7 @@ var src = {
 // 模板配置
 var tplOptions = {
 	engine: _juicer2.default,
+	dataTag: 'data',
 	data: { Math: Math, Number: Number, Boolean: Boolean, String: String, Array: Array, Object: Object, JSON: JSON, RegExp: RegExp, Date: Date }
 };
 

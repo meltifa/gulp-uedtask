@@ -76,13 +76,13 @@ function css(gulp) {
 	var spriteOptions = {
 		path: {
 			include: ['src/css', 'src/asset/sprite'],
-			output: 'dist/' + outputdir + '/sprite_[name].png',
+			output: 'dist/' + outputdir + '/sprite/[name].png',
 			public: function _public(_ref) {
 				var input = _ref.input;
 
 				var parse = _path2.default.parse(input);
 				var dir = (0, _utils.slash)(parse.dir).replace(/\/src\/css\b/, '/dist/css');
-				var dest = _path2.default.resolve('dist/' + outputdir + '/sprite_' + parse.name + '.png');
+				var dest = _path2.default.resolve('dist/' + outputdir + '/sprite/' + parse.name + '.png');
 				return (0, _utils.slash)(_path2.default.relative(dir, dest));
 			}
 		},

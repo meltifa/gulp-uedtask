@@ -31,10 +31,7 @@ var _utils = require('../utils');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function sprite(gulp) {
-
-	// 显示在控制台还是下划线比较好看
-	/* eslint-disable camelcase */
-	var sprite_resizer = function () {
+	var resize = function () {
 		var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(filepath) {
 			var file, handler, _ref2, width, height, wr, hr, name;
 
@@ -42,7 +39,6 @@ function sprite(gulp) {
 				while (1) {
 					switch (_context.prev = _context.next) {
 						case 0:
-							/* eslint-enable camelcase */
 							file = _path2.default.resolve(filepath);
 							handler = (0, _gm2.default)(file);
 							_context.next = 4;
@@ -81,7 +77,7 @@ function sprite(gulp) {
 			}, _callee, this);
 		}));
 
-		return function sprite_resizer(_x) {
+		return function resize(_x) {
 			return _ref.apply(this, arguments);
 		};
 	}();
@@ -101,8 +97,8 @@ function sprite(gulp) {
 
 	gulp.task('dev:after:sprite:resize', function watch(cb) {
 		var watcher = gulp.watch('src/asset/sprite/**/*.png');
-		watcher.on('add', sprite_resizer);
-		watcher.on('change', sprite_resizer);
+		watcher.on('add', resize);
+		watcher.on('change', resize);
 		return cb();
 	});
 }

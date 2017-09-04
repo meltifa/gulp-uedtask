@@ -25,6 +25,7 @@ const src = {
 // 模板配置
 const tplOptions = {
 	engine: juicer,
+	dataTag: 'data',
 	data: { Math, Number, Boolean, String, Array, Object, JSON, RegExp, Date }
 };
 
