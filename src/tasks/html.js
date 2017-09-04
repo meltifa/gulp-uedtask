@@ -91,6 +91,7 @@ export default function (options, {
 	];
 	const tplData = {
 		engine: juicer,
+		dataTag: 'data',
 		data: {
 			Math,
 			Number,

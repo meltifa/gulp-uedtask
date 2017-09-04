@@ -55,7 +55,8 @@ export default function(options, { gulp }) {
 				fontName: 'iconfont',
 				formats: ['svg', 'ttf', 'eot', 'woff'],
 				prependUnicode: true,
-				normalize: true
+				normalize: true,
+				fontHeight: 1001
 			}))
 			.on('glyphs', function(glyphs) {
 				const pathname = path.resolve(__dirname, '../../static/_iconfont.scss');

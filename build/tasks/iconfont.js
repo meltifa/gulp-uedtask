@@ -20,7 +20,8 @@ exports.default = function (options, _ref) {
 			fontName: 'iconfont',
 			formats: ['svg', 'ttf', 'eot', 'woff'],
 			prependUnicode: true,
-			normalize: true
+			normalize: true,
+			fontHeight: 1001
 		})).on('glyphs', function (glyphs) {
 			var pathname = _path2.default.resolve(__dirname, '../../static/_iconfont.scss');
 			var icons = glyphs.reduce(function (iconfont, glyph) {

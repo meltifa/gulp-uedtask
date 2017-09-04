@@ -13,6 +13,7 @@ exports.default = function (options, _ref) {
 	var templateSrc = ['src/**/_*.html', 'src/{template,inc}/**/*.html'];
 	var tplData = {
 		engine: _juicer2.default,
+		dataTag: 'data',
 		data: {
 			Math: Math,
 			Number: Number,
