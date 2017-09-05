@@ -35,16 +35,22 @@ var src = {
 	template: ['src/**/_*.html', 'src/{template,inc}/**/*.html']
 };
 
-// 模板配置
-var tplOptions = {
-	engine: _juicer2.default,
-	dataTag: 'data',
-	data: { Math: Math, Number: Number, Boolean: Boolean, String: String, Array: Array, Object: Object, JSON: JSON, RegExp: RegExp, Date: Date }
-};
-
 function html(gulp) {
 	var emit = this.emit;
 
+	// 模板配置
+
+	var tplOptions = {
+		engine: _juicer2.default,
+		dataTag: 'data',
+		data: { Math: Math, Number: Number, Boolean: Boolean, String: String, Array: Array, Object: Object, JSON: JSON, RegExp: RegExp, Date: Date },
+		log: function log(msg) {
+			return emit('log', {
+				title: 'Template render error',
+				content: msg
+			});
+		}
+	};
 
 	function compile(isNewer) {
 		var stream = gulp.src(src.entry);

@@ -22,15 +22,20 @@ const src = {
 	]
 };
 
-// 模板配置
-const tplOptions = {
-	engine: juicer,
-	dataTag: 'data',
-	data: { Math, Number, Boolean, String, Array, Object, JSON, RegExp, Date }
-};
 
 export default function html(gulp) {
 	const { emit } = this;
+
+	// 模板配置
+	const tplOptions = {
+		engine: juicer,
+		dataTag: 'data',
+		data: { Math, Number, Boolean, String, Array, Object, JSON, RegExp, Date },
+		log: msg => emit('log', {
+			title: 'Template render error',
+			content: msg
+		})
+	};
 
 	function compile(isNewer) {
 		let stream = gulp.src(src.entry);

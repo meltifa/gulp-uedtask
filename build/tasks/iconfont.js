@@ -92,7 +92,8 @@ function iconfont(gulp) {
 			fontName: 'iconfont',
 			formats: ['svg', 'ttf', 'eot', 'woff'],
 			prependUnicode: true,
-			normalize: true
+			normalize: true,
+			fontHeight: 1001
 		})).on('glyphs', function writeSCSS(glyphs) {
 			// SCSS模板
 			var tplPath = _path2.default.resolve(__dirname, '../../static/_iconfont.scss');

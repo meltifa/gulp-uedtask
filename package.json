@@ -32,7 +32,7 @@
     "fonteditor-core": "0.0.37",
     "gm": "^1.23.0",
     "gulp-file-include": "1.2.0",
-    "gulp-html-tpl": "^0.5.0",
+    "gulp-html-tpl": "^0.5.1",
     "gulp-iconfont": "9.0.0",
     "gulp-if": "2.0.2",
     "gulp-imagemin": "2.4.0",
