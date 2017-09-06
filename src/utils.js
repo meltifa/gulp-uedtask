@@ -1,7 +1,7 @@
 export function exit(message) {
-	/*eslint-disable*/
+	/* eslint-disable no-console */
 	console.warn(`\x1b[31m${message}\x1b[0m`);
-	/*eslint-enable*/
+	/* eslint-enable no-console */
 	process.exit();
 }
 

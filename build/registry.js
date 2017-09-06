@@ -12,9 +12,9 @@ var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
-var _create = require('babel-runtime/core-js/object/create');
+var _freeze = require('babel-runtime/core-js/object/freeze');
 
-var _create2 = _interopRequireDefault(_create);
+var _freeze2 = _interopRequireDefault(_freeze);
 
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
@@ -57,20 +57,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Registry = function (_Undertaker) {
 	(0, _inherits3.default)(Registry, _Undertaker);
 
-	function Registry(options) {
+	function Registry(_ref) {
+		var config = _ref.config,
+		    commands = _ref.commands;
 		(0, _classCallCheck3.default)(this, Registry);
 
 		var _this = (0, _possibleConstructorReturn3.default)(this, (Registry.__proto__ || (0, _getPrototypeOf2.default)(Registry)).call(this));
 
 		var emitter = new _events.EventEmitter();
-		_this.on = emitter.on.bind(emitter);
-		_this.emit = emitter.emit.bind(emitter);
-		_this.once = emitter.once.bind(emitter);
-		_this.off = emitter.removeListener.bind(emitter);
-		_this.reload = _this.reload.bind(_this);
-		_this._config = (0, _create2.default)(null);
-		_this._commands = options.commands.slice();
-
+		_this.context = (0, _freeze2.default)({
+			on: emitter.on.bind(emitter),
+			off: emitter.removeListener.bind(emitter),
+			emit: emitter.emit.bind(emitter),
+			once: emitter.once.bind(emitter),
+			reload: _this.reload.bind(_this),
+			config: (0, _freeze2.default)((0, _assign2.default)({}, config)),
+			commands: (0, _freeze2.default)(commands.slice())
+		});
 		_this.bind();
 		return _this;
 	}
@@ -78,7 +81,7 @@ var Registry = function (_Undertaker) {
 	(0, _createClass3.default)(Registry, [{
 		key: 'bind',
 		value: function bind() {
-			this.on('log', function () {
+			this.context.on('log', function () {
 				// 将所有连续消息存储起来最后一波打印
 				var timer = void 0;
 				var messages = [];
@@ -116,47 +119,24 @@ var Registry = function (_Undertaker) {
 
 			var watcher = _gulp2.default.watch(glob);
 			var emitReload = function emitReload() {
-				return _this2.emit('reload');
+				return _this2.context.emit('reload');
 			};
 			watcher.on('unlink', emitReload);
 			watcher.on('add', emitReload);
 			watcher.on('change', emitReload);
 		}
-
-		// 只能在 setConfig 之后再调用
-
-	}, {
-		key: 'getContext',
-		value: function getContext() {
-			return {
-				on: this.on,
-				off: this.off,
-				emit: this.emit,
-				once: this.once,
-				reload: this.reload,
-				config: (0, _assign2.default)({}, this._config),
-				commands: this._commands.slice()
-			};
-		}
-	}, {
-		key: 'setConfig',
-		value: function setConfig(config) {
-			(0, _assign2.default)(this._config, config);
-		}
 	}, {
 		key: 'set',
 		value: function set(task, fn) {
-			var _this3 = this;
-
 			var _tasks = this._tasks,
-			    emit = this.emit;
+			    context = this.context;
 
+			var emit = context.emit;
 			var execute = function execute() {
 				// 广播任务开始事件
 				emit('task-start', { task: task });
 				// 获取上下文要在 execute() 内部
 				// 因为注册任务的时候还没有调用 run() 来注入配置
-				var context = _this3.getContext();
 				return new _promise2.default(function wrap(resolve, reject) {
 					// 调用原本任务方法
 					var result = fn.call(context, function end(err) {

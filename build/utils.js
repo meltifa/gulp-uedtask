@@ -7,9 +7,9 @@ exports.exit = exit;
 exports.throttle = throttle;
 exports.slash = slash;
 function exit(message) {
-	/*eslint-disable*/
+	/* eslint-disable no-console */
 	console.warn('\x1B[31m' + message + '\x1B[0m');
-	/*eslint-enable*/
+	/* eslint-enable no-console */
 	process.exit();
 }
 

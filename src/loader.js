@@ -21,9 +21,9 @@ function loaddir(dir, filter) {
 			const filepath = path.resolve(dir, file);
 			let fn;
 			try {
-				/*eslint-disable*/
+				/* eslint-disable global-require, import/no-dynamic-require */
 				fn = require(filepath);
-				/*eslint-enable*/
+				/* eslint-enable global-require, import/no-dynamic-require */
 			} catch (e) {
 				utils.exit(`Unable to require file:\n${filepath}`);
 			}

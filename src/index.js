@@ -1,18 +1,19 @@
-/*eslint-disable*/
+/* eslint-disable import/no-extraneous-dependencies */
 import gulp from 'gulp';
-/*eslint-enable*/
+/* eslint-enable import/no-extraneous-dependencies */
 import Registry from './registry';
 import * as loader from './loader';
 import * as cmd from './cmd';
 
-const registry = new Registry({ commands: cmd.commands });
-gulp.registry(registry);
-
 export { gulp };
 
 export function run(options) {
-	registry.setConfig(Object.assign({}, options, cmd.args));
-	const context = registry.getContext();
+	const registry = new Registry({
+		commands: cmd.commands,
+		config: Object.assign({}, options, cmd.args)
+	});
+	const context = registry.context;
+	gulp.registry(registry);
 	loader.load(gulp, context);
 	loader.create(gulp, context);
 }

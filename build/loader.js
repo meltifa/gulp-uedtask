@@ -50,9 +50,9 @@ function loaddir(dir, filter) {
 			var filepath = _path2.default.resolve(dir, file);
 			var fn = void 0;
 			try {
-				/*eslint-disable*/
+				/* eslint-disable global-require, import/no-dynamic-require */
 				fn = require(filepath);
-				/*eslint-enable*/
+				/* eslint-enable global-require, import/no-dynamic-require */
 			} catch (e) {
 				utils.exit('Unable to require file:\n' + filepath);
 			}

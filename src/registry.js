@@ -6,22 +6,23 @@ import gulp from 'gulp';
 /* eslint-enable import/no-extraneous-dependencies */
 
 export default class Registry extends Undertaker {
-	constructor(options) {
+	constructor({ config, commands }) {
 		super();
 		const emitter = new EventEmitter();
-		this.on = emitter.on.bind(emitter);
-		this.emit = emitter.emit.bind(emitter);
-		this.once = emitter.once.bind(emitter);
-		this.off = emitter.removeListener.bind(emitter);
-		this.reload = this.reload.bind(this);
-		this._config = Object.create(null);
-		this._commands = options.commands.slice();
-
+		this.context = Object.freeze({
+			on: emitter.on.bind(emitter),
+			off: emitter.removeListener.bind(emitter),
+			emit: emitter.emit.bind(emitter),
+			once: emitter.once.bind(emitter),
+			reload: this.reload.bind(this),
+			config: Object.freeze(Object.assign({}, config)),
+			commands: Object.freeze(commands.slice())
+		});
 		this.bind();
 	}
 
 	bind() {
-		this.on('log', (() => {
+		this.context.on('log', (() => {
 			// 将所有连续消息存储起来最后一波打印
 			let timer;
 			const messages = [];
@@ -53,37 +54,20 @@ export default class Registry extends Undertaker {
 	// 因此需要用 wather.on() 来实现回调
 	reload(glob) {
 		const watcher = gulp.watch(glob);
-		const emitReload = () => this.emit('reload');
+		const emitReload = () => this.context.emit('reload');
 		watcher.on('unlink', emitReload);
 		watcher.on('add', emitReload);
 		watcher.on('change', emitReload);
 	}
 
-	// 只能在 setConfig 之后再调用
-	getContext() {
-		return {
-			on: this.on,
-			off: this.off,
-			emit: this.emit,
-			once: this.once,
-			reload: this.reload,
-			config: Object.assign({}, this._config),
-			commands: this._commands.slice()
-		};
-	}
-
-	setConfig(config) {
-		Object.assign(this._config, config);
-	}
-
 	set(task, fn) {
-		const { _tasks, emit } = this;
+		const { _tasks, context } = this;
+		const emit = context.emit;
 		const execute = () => {
 			// 广播任务开始事件
 			emit('task-start', { task });
 			// 获取上下文要在 execute() 内部
 			// 因为注册任务的时候还没有调用 run() 来注入配置
-			const context = this.getContext();
 			return new Promise(function wrap(resolve, reject) {
 				// 调用原本任务方法
 				const result = fn.call(context, function end(err, payload = {}) {

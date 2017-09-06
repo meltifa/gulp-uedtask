@@ -34,16 +34,17 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/*eslint-disable*/
-var registry = new _registry2.default({ commands: cmd.commands });
-/*eslint-enable*/
-
-_gulp2.default.registry(registry);
-
+/* eslint-disable import/no-extraneous-dependencies */
 exports.gulp = _gulp2.default;
+/* eslint-enable import/no-extraneous-dependencies */
+
 function run(options) {
-	registry.setConfig((0, _assign2.default)({}, options, cmd.args));
-	var context = registry.getContext();
+	var registry = new _registry2.default({
+		commands: cmd.commands,
+		config: (0, _assign2.default)({}, options, cmd.args)
+	});
+	var context = registry.context;
+	_gulp2.default.registry(registry);
 	loader.load(_gulp2.default, context);
 	loader.create(_gulp2.default, context);
 }
