@@ -92,6 +92,7 @@ export default class Registry extends Undertaker {
 				emit('task-end', { task, error });
 			});
 		};
+		execute.displayName = task;
 		_tasks[task] = execute;
 		return execute;
 	}

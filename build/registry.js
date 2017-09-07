@@ -163,6 +163,7 @@ var Registry = function (_Undertaker) {
 					emit('task-end', { task: task, error: error });
 				});
 			};
+			execute.displayName = task;
 			_tasks[task] = execute;
 			return execute;
 		}

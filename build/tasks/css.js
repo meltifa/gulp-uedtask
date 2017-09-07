@@ -141,7 +141,7 @@ function css(gulp) {
 	}
 	// 4. 像素值除以2
 	if (config.divideBy2) {
-		processors.push((0, _postcssPxEditor2.default)('divide-by-two?warn=false&min=3'));
+		processors.push((0, _postcssPxEditor2.default)('divide-by-two?warn=true&min=3'));
 	}
 	// 5. processors
 	if (config.useRem) {
