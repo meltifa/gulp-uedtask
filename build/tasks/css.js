@@ -87,7 +87,7 @@ function css(gulp) {
 			}
 		},
 		retina: config.useRetina,
-		divide: config.useRetina === 'pc',
+		divide: config.useRetina && !config.divideBy2,
 		development: isDevelopment,
 		filter: /asset\/sprite\/.+\.png$/,
 		style: {},
