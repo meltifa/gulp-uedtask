@@ -36,6 +36,7 @@ export default function css(gulp) {
 			}
 		},
 		retina: config.useRetina,
+		divide: config.useRetina === 'pc',
 		development: isDevelopment,
 		filter: /asset\/sprite\/.+\.png$/,
 		style: {},
@@ -46,12 +47,6 @@ export default function css(gulp) {
 			floyd: 0.8
 		}
 	};
-	if (config.useRetina === 'pc') {
-		const style = spriteOptions.style;
-		style.backgroundImage = 'normal';
-		style.backgroundPosition = 'normal';
-		style.backgroundSize = 'normal';
-	}
 	if (config.useRem) {
 		spriteOptions.style.backgroundPosition = 'percent';
 	}
