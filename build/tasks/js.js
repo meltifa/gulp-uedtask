@@ -17,14 +17,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // 所有配置类同 image 任务
 
-function isCompress(_ref) {
-	var path = _ref.path;
-
-	return !/\.min\.js$/i.test(path);
-}
-
 function js(gulp) {
+	var config = this.config;
+
 	var src = 'src/js/**/*.js';
+
+	function isCompress(_ref) {
+		var path = _ref.path;
+
+		return !(/\.min\.js$/i.test(path) || config.minifyJS === false);
+	}
 
 	gulp.task('dev:after:js', function watch(cb) {
 		this.reload(src);

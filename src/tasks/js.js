@@ -3,12 +3,13 @@
 import uglify from 'gulp-uglify';
 import gulpif from 'gulp-if';
 
-function isCompress({ path }) {
-	return !/\.min\.js$/i.test(path);
-}
-
 export default function js(gulp) {
+	const { config } = this;
 	const src = 'src/js/**/*.js';
+
+	function isCompress({ path }) {
+		return !(/\.min\.js$/i.test(path) || config.minifyJS === false);
+	}
 
 	gulp.task('dev:after:js', function watch(cb) {
 		this.reload(src);
