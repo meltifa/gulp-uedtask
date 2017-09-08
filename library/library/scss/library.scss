@@ -62,13 +62,13 @@ $LegacyIE: false !default;
 
 //单/多行截断，第一个参数为要截断的行数，需要设置元素为inline-block时需要将第二个参数设置为true
 //示例：@include line-clip(1, true)，inline-block元素的单行截断
-@mixin line-clip($line, $inline: 0) {
+@mixin line-clip($line, $inline: false) {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	word-wrap: normal;
 	@if ($line==1) {
 		white-space: nowrap;
-		@if ($inline==1) {
+		@if ($inline) {
 			// 行内格式化上下文可能需要用 vertical-align 来调整
 			display: inline-block;
 			@if ($LegacyIE) {
@@ -83,7 +83,7 @@ $LegacyIE: false !default;
 	@else {
 		-webkit-line-clamp: $line;
 		-webkit-box-orient: vertical;
-		@if ($inline==1) {
+		@if ($inline) {
 			display: inline-block;
 			@if ($LegacyIE) {
 				*display: inline;
