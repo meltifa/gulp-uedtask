@@ -9,7 +9,7 @@ $LegacyIE: false !default;
 	@if ($LegacyIE) {
 		$ie-hex-str: ie-hex-str($rgba);
 		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#{$ie-hex-str}, endColorstr=#{$ie-hex-str});
-		@at-root :root & {
+		:root & {
 			filter: none;
 		}
 	}
