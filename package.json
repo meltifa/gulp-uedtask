@@ -18,7 +18,7 @@
     "fonteditor-core": "0.0.36",
     "glob": "7.1.1",
     "gulp-file-include": "1.1.0",
-    "gulp-html-tpl": "0.5.1",
+    "gulp-html-tpl": "0.5.2",
     "gulp-iconfont": "8.0.1",
     "gulp-if": "2.0.2",
     "gulp-imagemin": "2.4.0",
