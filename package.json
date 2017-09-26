@@ -47,7 +47,7 @@
     "postcss": "6.0.12",
     "postcss-px-editor": "0.1.0",
     "postcss-pxtorem": "4.0.1",
-    "postcss-sprite-property": "1.1.2",
+    "postcss-sprite-property": "^1.2.0",
     "postcss-url-editor": "0.3.3",
     "posthtml-parser": "0.2.1",
     "undertaker-registry": "1.0.0",
