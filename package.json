@@ -1,6 +1,6 @@
 {
   "name": "gulp-uedtask",
-  "version": "2.1.9",
+  "version": "2.1.10",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "autoprefixer": "6.7.6",
+    "autoprefixer": "7.1.4",
     "browser-sync": "2.18.8",
     "del": "2.2.2",
     "fonteditor-core": "0.0.36",
