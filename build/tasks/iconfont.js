@@ -3,19 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-
-var _defineProperty = require('babel-runtime/core-js/object/define-property');
-
-var _defineProperty2 = _interopRequireDefault(_defineProperty);
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
-var _stringify = require('babel-runtime/core-js/json/stringify');
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
 exports.default = iconfont;
 
 var _fs = require('fs');
@@ -36,23 +23,20 @@ var _gulpIconfont2 = _interopRequireDefault(_gulpIconfont);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var iconPath = _path2.default.resolve('src/asset/iconfont');
-var unicodeRE = /^u([A-Z0-9]{4})-/;
+const iconPath = _path2.default.resolve('src/asset/iconfont');
+const unicodeRE = /^u([A-Z0-9]{4})-/;
 
 // 返回所有SVG文件的文件名
 function getSvgs() {
-	return _fs2.default.readdirSync(iconPath).filter(function (file) {
-		return (/\.svg$/i.test(file)
-		);
-	});
+	return _fs2.default.readdirSync(iconPath).filter(file => /\.svg$/i.test(file));
 }
 
 // 根据现有SVG 文件的前缀获取当前已经排序的最大序列
 function getMaxUnicode() {
-	var max = 59904;
+	let max = 59904;
 	getSvgs().forEach(function compare(svg) {
 		if (unicodeRE.test(svg)) {
-			var index = parseInt(RegExp.$1, 16);
+			const index = parseInt(RegExp.$1, 16);
 			if (index > max) {
 				max = index;
 			}
@@ -63,13 +47,13 @@ function getMaxUnicode() {
 
 // 给还没有添加前缀的文件添加前缀
 function renameSvgs() {
-	var begin = getMaxUnicode();
+	let begin = getMaxUnicode();
 	getSvgs().forEach(function rename(svg) {
 		if (unicodeRE.test(svg)) {
 			return;
 		}
 		begin += 1;
-		var newPath = _path2.default.join(iconPath, 'u' + begin.toString(16).toUpperCase() + '-' + svg);
+		const newPath = _path2.default.join(iconPath, `u${begin.toString(16).toUpperCase()}-${svg}`);
 		_fs2.default.renameSync(iconPath + svg, newPath);
 	});
 	return true;
@@ -77,14 +61,14 @@ function renameSvgs() {
 
 // 把对象转换成SCSS中的格式
 function toSCSSObject(obj) {
-	return (0, _stringify2.default)(obj, null, '\t').replace(/\{/g, '(').replace(/\}/g, ')').replace(/\\\\/g, '\\');
+	return JSON.stringify(obj, null, '\t').replace(/\{/g, '(').replace(/\}/g, ')').replace(/\\\\/g, '\\');
 }
 
 function iconfont(gulp) {
 	gulp.task('default:iconfont', function compile() {
 		// 不存在 iconfont 的目录就无需执行下面的代码了
 		if (!_fs2.default.existsSync(iconPath)) {
-			return _promise2.default.resolve();
+			return Promise.resolve();
 		}
 		// 先重命名新加入的文件
 		renameSvgs();
@@ -96,16 +80,16 @@ function iconfont(gulp) {
 			fontHeight: 1001
 		})).on('glyphs', function writeSCSS(glyphs) {
 			// SCSS模板
-			var tplPath = _path2.default.resolve(__dirname, '../../static/_iconfont.scss');
-			var template = _fs2.default.readFileSync(tplPath, { encoding: 'utf8' });
+			const tplPath = _path2.default.resolve(__dirname, '../../static/_iconfont.scss');
+			const template = _fs2.default.readFileSync(tplPath, { encoding: 'utf8' });
 			// 生成的数据
-			var icons = glyphs.reduce(function getCharCodes(fonts, glyph) {
-				return (0, _defineProperty2.default)(fonts, glyph.name, {
-					value: '\\' + glyph.unicode[0].charCodeAt(0).toString(16).toLowerCase(),
+			const icons = glyphs.reduce(function getCharCodes(fonts, glyph) {
+				return Object.defineProperty(fonts, glyph.name, {
+					value: `\\${glyph.unicode[0].charCodeAt(0).toString(16).toLowerCase()}`,
 					enumerable: true
 				});
 			}, {});
-			var data = '$__iconfont__data: ' + toSCSSObject(icons) + ';';
+			const data = `$__iconfont__data: ${toSCSSObject(icons)};`;
 			// 确保文件夹存在
 			_mkdirp2.default.sync('src/css');
 			// 写入文件

@@ -4,11 +4,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.gulp = undefined;
-
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 exports.run = run;
 exports.ban = ban;
 exports.only = only;
@@ -39,27 +34,27 @@ exports.gulp = _gulp2.default;
 /* eslint-enable import/no-extraneous-dependencies */
 
 function run(options) {
-	var registry = new _registry2.default({
+	const registry = new _registry2.default({
 		commands: cmd.commands,
-		config: (0, _assign2.default)({}, options, cmd.args)
+		config: Object.assign({}, options, cmd.args)
 	});
-	var context = registry.context;
+	const context = registry.context;
 	_gulp2.default.registry(registry);
 	loader.load(_gulp2.default, context);
 	loader.create(_gulp2.default, context);
 }
 
-function ban() {
-	loader.ban.apply(loader, arguments);
+function ban(...args) {
+	loader.ban(...args);
 	return exports;
 }
 
-function only() {
-	loader.only.apply(loader, arguments);
+function only(...args) {
+	loader.only(...args);
 	return exports;
 }
 
-function include() {
-	loader.include.apply(loader, arguments);
+function include(...args) {
+	loader.include(...args);
 	return exports;
 }

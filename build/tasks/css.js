@@ -3,11 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 exports.default = css;
 
 var _fs = require('fs');
@@ -57,32 +52,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // 图片文件夹名
 // 先判断是否已存在，否则默认 images
 function imgdir() {
-	var dirs = ['images', 'img'];
-	var dir = dirs.find(function (dirpath) {
-		return _fs2.default.existsSync(_path2.default.resolve('src/' + dirpath));
-	});
+	const dirs = ['images', 'img'];
+	const dir = dirs.find(dirpath => _fs2.default.existsSync(_path2.default.resolve(`src/${dirpath}`)));
 	return dir || dirs.shift();
 }
 
 function css(gulp) {
-	var config = this.config,
-	    commands = this.commands,
-	    emit = this.emit;
-
-	var isDevelopment = commands.indexOf('dev') > -1;
+	const { config, commands, emit } = this;
+	const isDevelopment = commands.indexOf('dev') > -1;
 
 	/* 雪碧图配置 */
-	var outputdir = imgdir();
-	var spriteOptions = {
+	const outputdir = imgdir();
+	const spriteOptions = {
 		path: {
 			include: ['src/css', 'src/asset/sprite'],
-			output: 'dist/' + outputdir + '/sprite/[name].png',
-			public: function _public(_ref) {
-				var input = _ref.input;
-
-				var parse = _path2.default.parse(input);
-				var dir = (0, _utils.slash)(parse.dir).replace(/\/src\/css\b/, '/dist/css');
-				var dest = _path2.default.resolve('dist/' + outputdir + '/sprite/' + parse.name + '.png');
+			output: `dist/${outputdir}/sprite/[name].png`,
+			public({ input }) {
+				const parse = _path2.default.parse(input);
+				const dir = (0, _utils.slash)(parse.dir).replace(/\/src\/css\b/, '/dist/css');
+				const dest = _path2.default.resolve(`dist/${outputdir}/sprite/${parse.name}.png`);
 				return (0, _utils.slash)(_path2.default.relative(dir, dest));
 			}
 		},
@@ -101,22 +89,20 @@ function css(gulp) {
 	if (config.useRem) {
 		spriteOptions.style.backgroundPosition = 'percent';
 	}
-	var sprite = new _postcssSpriteProperty2.default(spriteOptions);
+	const sprite = new _postcssSpriteProperty2.default(spriteOptions);
 
 	/* SASS选项 */
-	var sassOptions = {
+	const sassOptions = {
 		functions: sprite.functions(),
 		outputStyle: isDevelopment || config.minifyCSS === false ? 'expanded' : 'compressed',
 		includePaths: [new _library2.default('scss').cwd()]
 	};
 
 	/* PostCSS处理器 */
-	var processors = [];
+	const processors = [];
 	// 1. URL查找
-	processors.push((0, _postcssUrlEditor2.default)(function findUrl(url, _ref2) {
-		var fromUrl = _ref2.from;
-
-		var file = _path2.default.resolve(fromUrl, '../', url);
+	processors.push((0, _postcssUrlEditor2.default)(function findUrl(url, { from: fromUrl }) {
+		let file = _path2.default.resolve(fromUrl, '../', url);
 		// 如果(默认)从SCSS文件本身出发找不到资源
 		if (!_fs2.default.existsSync(file)) {
 			// 从CSS目录出发查找
@@ -153,7 +139,7 @@ function css(gulp) {
 
 	// 编译
 	function compile() {
-		return new _promise2.default(function delay(resolve, reject) {
+		return new Promise(function delay(resolve, reject) {
 			function onError(e) {
 				reject(e);
 				this.end();

@@ -24,14 +24,12 @@ var _gulpIf2 = _interopRequireDefault(_gulpIf);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // 带 `.min` 后缀的文件不压缩
-function isCompress(_ref) {
-	var path = _ref.path;
-
+function isCompress({ path }) {
 	return !/\.min\.(jpg|png|gif)$/i.test(path);
 }
 
 function image(gulp) {
-	var src = 'src/{img,images}/**/*.{jpg,png,gif}';
+	const src = 'src/{img,images}/**/*.{jpg,png,gif}';
 
 	// 只在 build 阶段压缩
 	gulp.task('build:image', function compress() {

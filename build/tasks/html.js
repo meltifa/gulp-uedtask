@@ -28,7 +28,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // 因此必须关闭
 _juicer2.default.set('strip', false);
 
-var src = {
+const src = {
 	// 入口文件
 	entry: ['src/**/*.html', '!src/**/_*.html', '!src/{asset,template,inc}/**/*.html'],
 	// 模板文件
@@ -36,24 +36,21 @@ var src = {
 };
 
 function html(gulp) {
-	var emit = this.emit;
+	const { emit } = this;
 
 	// 模板配置
-
-	var tplOptions = {
+	const tplOptions = {
 		engine: _juicer2.default,
 		dataTag: 'data',
-		data: { Math: Math, Number: Number, Boolean: Boolean, String: String, Array: Array, Object: Object, JSON: JSON, RegExp: RegExp, Date: Date },
-		log: function log(msg) {
-			return emit('log', {
-				title: 'Template render error',
-				content: msg
-			});
-		}
+		data: { Math, Number, Boolean, String, Array, Object, JSON, RegExp, Date },
+		log: msg => emit('log', {
+			title: 'Template render error',
+			content: msg
+		})
 	};
 
 	function compile(isNewer) {
-		var stream = gulp.src(src.entry);
+		let stream = gulp.src(src.entry);
 		// 根据是否需要加载 newer 分支
 		// 更新模板文件的时候不加载 newer
 		// 入口文件变动的时候加载
@@ -61,7 +58,7 @@ function html(gulp) {
 			stream = stream.pipe((0, _gulpNewer2.default)('dist'));
 		}
 		return stream.pipe((0, _gulpFileInclude2.default)()).on('error', function log(err) {
-			emit('log', 'fileIncluder Error!\n' + err.message);
+			emit('log', `fileIncluder Error!\n${err.message}`);
 			this.end();
 		}).pipe((0, _gulpHtmlTpl2.default)(tplOptions)).pipe(gulp.dest('dist'));
 	}

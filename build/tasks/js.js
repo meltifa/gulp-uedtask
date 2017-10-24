@@ -5,27 +5,47 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = js;
 
-var _gulpUglify = require('gulp-uglify');
+var _webpackStream = require('webpack-stream');
 
-var _gulpUglify2 = _interopRequireDefault(_gulpUglify);
+var _webpackStream2 = _interopRequireDefault(_webpackStream);
 
-var _gulpIf = require('gulp-if');
+var _gulpBabel = require('gulp-babel');
 
-var _gulpIf2 = _interopRequireDefault(_gulpIf);
+var _gulpBabel2 = _interopRequireDefault(_gulpBabel);
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // 所有配置类同 image 任务
 
+const babelConfig = {
+	presets: [['env', {
+		targets: {
+			browsers: ['last 2 versions', 'ie >= 8']
+		},
+		modules: false,
+		useBuiltIns: true
+	}]],
+	ignore: ['lib', '*.min.js']
+};
+const isUsingWebpack = _fs2.default.existsSync('./webpack.config.js', result => result);
+let webpackConfig;
+if (isUsingWebpack) {
+	webpackConfig = require(_path2.default.join(process.cwd(), './webpack.config.js'));
+}
+
 function js(gulp) {
-	var config = this.config;
-
-	var src = 'src/js/**/*.js';
-
-	function isCompress(_ref) {
-		var path = _ref.path;
-
-		return !(/\.min\.js$/i.test(path) || config.minifyJS === false);
+	const { config } = this;
+	const src = 'src/js/**/*.js';
+	if (config.minifyJS !== false) {
+		babelConfig.presets.push(['minify']);
 	}
 
 	gulp.task('dev:after:js', function watch(cb) {
@@ -34,6 +54,10 @@ function js(gulp) {
 	});
 
 	gulp.task('build:js', function compile() {
-		return gulp.src(src).pipe((0, _gulpIf2.default)(isCompress, (0, _gulpUglify2.default)())).pipe(gulp.dest('dist/js'));
+		let stream = gulp.src(src);
+		if (isUsingWebpack) {
+			stream = stream.pipe((0, _webpackStream2.default)(webpackConfig));
+		}
+		return stream.pipe((0, _gulpBabel2.default)(babelConfig)).pipe(gulp.dest('dist/js'));
 	});
 }

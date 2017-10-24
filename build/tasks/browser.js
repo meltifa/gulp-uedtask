@@ -14,24 +14,18 @@ var _utils = require('../utils');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function browser() {
-	var config = this.config,
-	    commands = this.commands,
-	    on = this.on,
-	    emit = this.emit;
+	const { config, commands, on, emit } = this;
 
 	// 不是开发阶段不启动浏览器刷新
-
 	if (commands.indexOf('dev') < 0) {
 		return;
 	}
 
-	var reload = void 0;
-	on('task-end', function init(_ref) {
-		var task = _ref.task;
-
+	let reload;
+	on('task-end', function init({ task }) {
 		// `dev` 执行完毕后，启动服务
 		if (task === 'dev') {
-			var options = {
+			const options = {
 				server: {
 					// 服务器根目录
 					baseDir: 'dist',
@@ -57,7 +51,7 @@ function browser() {
 			if (config.port) {
 				options.port = typeof config.port === 'number' ? config.port : Math.floor(9999 * Math.random());
 			}
-			var bs = _browserSync2.default.create();
+			const bs = _browserSync2.default.create();
 			bs.init(options);
 			// 延时执行刷新
 			reload = (0, _utils.throttle)(bs.reload);
@@ -68,7 +62,5 @@ function browser() {
 	});
 
 	// 触发重载事件之前确保服务器已经启动
-	on('reload', function () {
-		return reload && reload();
-	});
+	on('reload', () => reload && reload());
 }
