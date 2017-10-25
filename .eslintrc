@@ -1,75 +1,18 @@
 {
-	"parserOptions": {
-		"ecmaVersion": 6,
-		"sourceType": "module"
-	},
-	"parser": "babel-eslint",
 	"env": {
-		"node": true,
-		"es6": true
-	},
-	"rules": {
-		"array-callback-return": "error",
-		"block-scoped-var": "error",
-		"eqeqeq": ["error", "allow-null"],
-		"curly": ["error", "all"],
-		"consistent-return": ["error", {"treatUndefinedAsUnspecified": true}],
-		"default-case": "error",
-		"dot-location": ["error", "property"],
-		"dot-notation": ["error", {"allowKeywords": true}],
-		"no-alert": "warn",
-		"no-caller": "error",
-		"no-constant-condition": ["error", {"checkLoops": false}],
-		"no-div-regex": "error",
-		"no-empty": "warn",
-		"no-empty-pattern": "error",
-		"no-extra-bind": "error",
-		"no-extra-label": "error",
-		"no-floating-decimal": "error",
-		"no-implicit-coercion": "error",
-		"no-implicit-globals": "warn",
-		"no-implied-eval": "error",
-		"no-invalid-this": "warn",
-		"no-iterator": "error",
-		"no-labels": "error",
-		"no-lone-blocks": "error",
-		"no-loop-func": "error",
-		"no-multi-spaces": "error",
-		"no-native-reassign": "error",
-		"no-new-wrappers": "warn",
-		"no-octal": "error",
-		"no-octal-escape": "error",
-		"no-param-reassign": "error",
-		"no-proto": "error",
-		"no-redeclare": "error",
-		"no-self-assign": "error",
-		"no-self-compare": "error",
-		"no-throw-literal": "error",
-		"no-unused-expressions": ["error", {"allowShortCircuit": true, "allowTernary": true}],
-		"no-unused-labels": "error",
-		"no-useless-call": "error",
-		"no-useless-concat": "error",
-		"no-useless-escape": "error",
-		"no-with": "error",
-		"radix": "error",
-		"vars-on-top": "error",
-		"yoda": ["error", "always"],
-		"no-shadow-restricted-names": "error",
-		"no-undef": "error",
-		"no-undef-init": "error",
-		"no-undefined": "error",
-		"no-unused-vars": "warn",
-		"no-use-before-define": "warn",
-		"no-confusing-arrow": "error",
-		"no-console": "warn",
-		"no-duplicate-imports": "error",
-		"no-useless-computed-key": "error",
-		"no-useless-constructor": "error",
-		"no-useless-rename": "error",
-		"require-yield": "error",
-		"quotes": ["error", "single"]
+		"es6": true,
+		"node": true
 	},
 	"extends": [
-		"eslint:recommended"
-	]
+		"airbnb-base"
+	],
+	"rules": {
+		"no-tabs": "off",
+		"linebreak-style": "off",
+		"comma-dangle": "off",
+		"indent": ["warn", "tab"],
+		"prefer-arrow-callback": "off",
+		"eol-last": "off",
+		"no-underscore-dangle": "off"
+	}
 }
