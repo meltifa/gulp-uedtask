@@ -4,9 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-exports.default = function (options, _ref) {
-	var gulp = _ref.gulp;
-
+exports.default = function (options, { gulp }) {
 
 	try {
 		_fs2.default.accessSync(spritePath, _fs2.default.hasOwnProperty('R_OK') ? _fs2.default.R_OK : _fs2.default.constants.R_OK);
@@ -14,38 +12,38 @@ exports.default = function (options, _ref) {
 		return void 0;
 	}
 
-	var dirPaths = getSubDirPaths();
-	var isRetina = Boolean(options.useRetina);
-	var isRem = Boolean(options.useRem);
-	var isDivideBy2 = Boolean(options.divideBy2);
-	var isOnlyRetina = !isDivideBy2 && isRetina;
-	var imageDist = getImageDist() + '/sprite';
+	const dirPaths = getSubDirPaths();
+	const isRetina = Boolean(options.useRetina);
+	const isRem = Boolean(options.useRem);
+	const isDivideBy2 = Boolean(options.divideBy2);
+	const isOnlyRetina = !isDivideBy2 && isRetina;
+	const imageDist = getImageDist() + '/sprite';
 
 	function createSprite(pathname) {
 		if (pathname) {
-			var _conf = {
+			const conf = {
 				padding: 2,
 				imgName: '.tempsprite/sprite_' + pathname + '.png',
 				imgPath: '/' + imageDist + '/sprite_' + pathname + '.png',
 				cssName: 'src/css/sprite/_sprite_' + pathname + '.scss',
-				cssTemplate: tplCreator({ byDir: true, isRem: isRem, isOnlyRetina: isOnlyRetina })
+				cssTemplate: tplCreator({ byDir: true, isRem, isOnlyRetina })
 			};
 			if (isRetina) {
-				Object.assign(_conf, {
+				Object.assign(conf, {
 					retinaImgName: '.tempsprite/sprite_' + pathname + '@2x.png',
 					retinaSrcFilter: '.tempsprite/resizer/**/*@2x.png',
 					retinaImgPath: '/' + imageDist + '/sprite' + (pathname ? '_' + pathname : '') + '@2x.png',
 					padding: 8
 				});
 			}
-			return _conf;
+			return conf;
 		}
-		var conf = {
+		const conf = {
 			padding: 2,
 			imgName: '.tempsprite/sprite.png',
 			imgPath: '/' + imageDist + '/sprite.png',
 			cssName: 'src/css/sprite/_sprite.scss',
-			cssTemplate: tplCreator({ isRem: isRem, isOnlyRetina: isOnlyRetina })
+			cssTemplate: tplCreator({ isRem, isOnlyRetina })
 		};
 		if (isRetina) {
 			Object.assign(conf, {
@@ -143,9 +141,9 @@ var _gulpUtil = require('gulp-util');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var CWD = process.cwd();
-var spritePath = CWD + '/src/asset/sprite/';
-var tplCreator = new _library2.default('sprite').use();
+const CWD = process.cwd();
+const spritePath = CWD + '/src/asset/sprite/';
+const tplCreator = new _library2.default('sprite').use();
 
 function getSubDirPaths() {
 	return _fs2.default.readdirSync(spritePath).reduce(function (box, file) {
@@ -159,8 +157,6 @@ function getSubDirPaths() {
 }
 
 function getImageDist() {
-	var dirs = ['images', 'img'];
-	return _fs2.default.readdirSync(CWD + '/src').filter(function (dir) {
-		return dirs.includes(dir);
-	}).shift() || 'img';
+	const dirs = ['images', 'img'];
+	return _fs2.default.readdirSync(CWD + '/src').filter(dir => dirs.includes(dir)).shift() || 'img';
 }

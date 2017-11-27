@@ -1,6 +1,6 @@
 {
 	"name": "gulp-uedtask",
-	"version": "2.1.10",
+	"version": "2.1.11",
 	"description": "",
 	"main": "build/index.js",
 	"scripts": {
@@ -13,9 +13,6 @@
 	"license": "MIT",
 	"dependencies": {
 		"autoprefixer": "7.1.4",
-		"babel-cli": "^6.26.0",
-		"babel-preset-env": "^1.6.1",
-		"babel-preset-minify": "^0.2.0",
 		"browser-sync": "2.18.8",
 		"del": "2.2.2",
 		"fonteditor-core": "0.0.36",
@@ -47,6 +44,9 @@
 		"run-sequence": "1.2.2"
 	},
 	"devDependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-preset-env": "^1.6.1",
+		"babel-preset-stage-0": "^6.24.1",
 		"eslint": "4.5.0",
 		"eslint-config-airbnb-base": "11.3.2",
 		"eslint-plugin-import": "2.7.0"

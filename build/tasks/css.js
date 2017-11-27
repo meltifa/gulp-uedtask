@@ -4,24 +4,27 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-exports.default = function (options, _ref) {
-	var gulp = _ref.gulp,
-	    TaskLogger = _ref.TaskLogger,
-	    TaskListener = _ref.TaskListener;
+exports.default = function (options, {
+	gulp,
+	TaskLogger,
+	TaskListener
+}) {
 
+	const settings = getSettings(options);
 
-	var settings = getSettings(options);
-
-	var outputStyle = 'compressed';
+	let outputStyle = 'compressed';
 	gulp.task('dev:before:css', function () {
 		outputStyle = 'expanded';
 	});
 
-	var cssHandler = function cssHandler() {
+	const cssHandler = function () {
 		return new Promise(function (resolve, reject) {
 			return setTimeout(function () {
-				return gulp.src('src/css/**/*.scss').pipe((0, _gulpNewer2.default)('dist/css')).pipe((0, _gulpSass2.default)({
-					outputStyle: outputStyle,
+				return gulp.src('src/css/**/*.scss').pipe((0, _gulpNewer2.default)({
+					dest: 'dist/css',
+					ext: '.css'
+				})).pipe((0, _gulpSass2.default)({
+					outputStyle,
 					includePaths: [new _library2.default('scss').cwd(), process.cwd() + '/src/css/sprite']
 				})).on('error', _gulpSass2.default.logError).pipe(gulp.dest('dist/css')).pipe((0, _gulpPostcss2.default)(settings)).pipe(gulp.dest('dist/css')).on('end', resolve);
 			}, 200);
@@ -31,11 +34,9 @@ exports.default = function (options, _ref) {
 	};
 
 	TaskListener.subscribe('ready', function initDefault() {
-		var allTasks = TaskLogger.getAllTasks();
-		var defaultDeps = ['default:sprite', 'default:image', 'default:webfont', 'default:iconfont'];
-		var dependencies = defaultDeps.filter(function (dep) {
-			return -1 < allTasks.indexOf(dep);
-		});
+		const allTasks = TaskLogger.getAllTasks();
+		const defaultDeps = ['default:sprite', 'default:image', 'default:webfont', 'default:iconfont'];
+		const dependencies = defaultDeps.filter(dep => allTasks.indexOf(dep) > -1);
 		gulp.task('default:css', dependencies, cssHandler);
 		TaskListener.unsubscribe('ready', initDefault);
 	});
@@ -94,19 +95,19 @@ var _gulpNewer2 = _interopRequireDefault(_gulpNewer);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getSettings(options) {
-	var isDivideBy2 = Boolean(options.divideBy2);
-	var isUsingRem = Boolean(options.useRem);
-	var isNoHash = Boolean(options.noHash);
-	var rootValue = parseInt(options.rootValue, 10) || 40;
+	const isDivideBy2 = Boolean(options.divideBy2);
+	const isUsingRem = Boolean(options.useRem);
+	const isNoHash = Boolean(options.noHash);
+	const rootValue = parseInt(options.rootValue, 10) || 40;
 
-	var settings = [];
+	const settings = [];
 
 	if (!isNoHash) {
 		settings.push((0, _postcssUrlEditor2.default)('add-version?cssSrc=src&cssDest=dist&md5=true'));
 	}
 	if (isUsingRem) {
 		settings.push((0, _postcssPxtorem2.default)({
-			rootValue: rootValue,
+			rootValue,
 			minPixelValue: 3,
 			propWhiteList: new _library2.default('pxtorem').use()()
 		}));

@@ -4,23 +4,19 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-exports.default = function (_ref, _ref2) {
-	var port = _ref.port;
-	var gulp = _ref2.gulp,
-	    TaskListener = _ref2.TaskListener;
+exports.default = function ({ port }, { gulp, TaskListener }) {
 
-
-	var bsPort = port ? 'number' === typeof port ? port : Math.floor(9999 * Math.random()) : false;
+	const bsPort = port ? 'number' === typeof port ? port : Math.floor(9999 * Math.random()) : false;
 
 	gulp.task('dev:after:browser', function () {
-		var bs = _browserSync2.default.create();
+		const bs = _browserSync2.default.create();
 
 		return new Promise(function (resolve) {
-			var config = {
+			const config = {
 				server: {
 					baseDir: 'dist',
 					directory: true,
-					middleware: function middleware(req, res, next) {
+					middleware(req, res, next) {
 						res.setHeader('Access-Control-Allow-Origin', '*');
 						next();
 					}

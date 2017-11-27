@@ -4,12 +4,10 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-exports.default = function (options, _ref) {
-	var gulp = _ref.gulp;
-
+exports.default = function (options, { gulp }) {
 
 	function getUrlsFromCSS(css) {
-		var urls = [];
+		const urls = [];
 		String(css).replace(/url\(\s*(["']?)([^)"']+?)\1\s*\)/g, function (_, q, url) {
 			if (0 > urls.indexOf(url)) {
 				urls.push(url);
@@ -18,26 +16,20 @@ exports.default = function (options, _ref) {
 		return urls;
 	}
 
-	function checkHTML(file, content) {
-		var logger = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-
-		var ast = Array.isArray(content) ? content : (0, _posthtmlParser2.default)(content);
+	function checkHTML(file, content, logger = []) {
+		const ast = Array.isArray(content) ? content : (0, _posthtmlParser2.default)(content);
 		ast.reduce(function (logger, node) {
 			if (!node) {
 				return logger;
 			}
 			if ('string' === typeof node) {
-				var exec = /^<!--([\s\S]+)-->$/.exec(node);
+				const exec = /^<!--([\s\S]+)-->$/.exec(node);
 				if (exec) {
 					checkHTML(file, exec[1], logger);
 				}
 				return logger;
 			}
-			var _node$attrs = node.attrs,
-			    attrs = _node$attrs === undefined ? {} : _node$attrs,
-			    tag = node.tag,
-			    sub = node.content;
-
+			const { attrs = {}, tag, content: sub } = node;
 			switch (tag) {
 				case 'img':
 					if (isLocalSource(attrs.src)) {
@@ -45,7 +37,7 @@ exports.default = function (options, _ref) {
 					}
 					if (attrs.srcset) {
 						attrs.srcset.split(',').reduce(function (logger, src) {
-							var exec = /\S+/.exec(src);
+							const exec = /\S+/.exec(src);
 							if (exec && isLocalSource(exec[0])) {
 								logger[exec[0]] = true;
 							}
@@ -91,32 +83,32 @@ exports.default = function (options, _ref) {
 		}, logger);
 
 		return {
-			file: file,
+			file,
 			sources: Object.keys(logger)
 		};
 	}
 
 	function checkCSS(file, content) {
-		var sources = [];
+		const sources = [];
 		return (0, _postcss2.default)([(0, _postcssUrlEditor2.default)(function (url) {
 			if (-1 === sources.indexOf(url)) {
 				sources.push(url);
 			}
 			return url;
 		})]).process(content).then(function () {
-			return { file: file, sources: sources };
+			return { file, sources };
 		});
 	}
 
-	var CWD = process.cwd();
-	var rootPath = CWD + '/dist';
+	const CWD = process.cwd();
+	const rootPath = CWD + '/dist';
 
 	gulp.task('build:after:sources', function () {
 
-		var distFiles = new _library2.default(rootPath).all();
+		const distFiles = new _library2.default(rootPath).all();
 
-		var promises = distFiles.reduce(function (pros, file) {
-			var exec = /\.(html|css)$/i.exec(file);
+		const promises = distFiles.reduce(function (pros, file) {
+			const exec = /\.(html|css)$/i.exec(file);
 			if (exec) {
 				pros.push(new Promise(function (resolve, reject) {
 					return _fs2.default.readFile(file, function (err, buffer) {
@@ -124,9 +116,7 @@ exports.default = function (options, _ref) {
 					});
 				}).then(function (content) {
 					return 'html' === exec[1].toLowerCase() ? checkHTML(file, content) : checkCSS(file, content);
-				}).catch(function () {
-					return (0, _gulpUtil.log)('[' + _gulpUtil.colors.yellow('check-sources') + '] File unreadable: ' + _path2.default.relative(CWD, file));
-				}));
+				}).catch(() => (0, _gulpUtil.log)('[' + _gulpUtil.colors.yellow('check-sources') + '] File unreadable: ' + _path2.default.relative(CWD, file))));
 			}
 			return pros;
 		}, []);
@@ -138,21 +128,19 @@ exports.default = function (options, _ref) {
 				}, 500);
 			});
 		}).then(function (results) {
-			var usedSources = [];
+			const usedSources = [];
 			usedSources.files = {};
 			results.reduce(function (usedSources, result) {
 				if (!result) {
 					return usedSources;
 				}
-				var file = result.file,
-				    sources = result.sources;
-
+				const { file, sources } = result;
 				return sources.reduce(function (usedSources, source) {
-					var src = source.replace(/\\/g, '/');
+					const src = source.replace(/\\/g, '/');
 					if (/^(https?:)?\/\//i.test(src)) {
 						return usedSources;
 					}
-					var realPath = void 0;
+					let realPath;
 					if (0 === src.indexOf('/')) {
 						realPath = _path2.default.resolve(rootPath, src.substring(1));
 					} else {
@@ -167,35 +155,24 @@ exports.default = function (options, _ref) {
 				}, usedSources);
 			}, usedSources);
 
-			var unusedSources = distFiles.filter(function (file) {
+			const unusedSources = distFiles.filter(function (file) {
 				return !usedSources.files.hasOwnProperty(file) && !/\.html$/i.test(file);
 			});
 
-			var notFoundSources = usedSources.filter(function (_ref2) {
-				var href = _ref2.href;
-
+			const notFoundSources = usedSources.filter(function ({ href }) {
 				return -1 === distFiles.indexOf(href);
 			});
 
-			return { usedSources: usedSources, unusedSources: unusedSources, notFoundSources: notFoundSources };
-		}).then(function (_ref3) {
-			var unusedSources = _ref3.unusedSources,
-			    notFoundSources = _ref3.notFoundSources;
-
+			return { usedSources, unusedSources, notFoundSources };
+		}).then(function ({ unusedSources, notFoundSources }) {
 			if (unusedSources.length) {
 				(0, _gulpUtil.log)('[' + _gulpUtil.colors.yellow('Check-Sources') + '] The following files are not used:');
-				unusedSources.forEach(function (file, index) {
-					return console.log('  ' + (index + 1) + '. ' + _path2.default.relative(CWD, file));
-				});
+				unusedSources.forEach((file, index) => console.log('  ' + (index + 1) + '. ' + _path2.default.relative(CWD, file)));
 			}
 
 			if (notFoundSources.length) {
 				(0, _gulpUtil.log)('[' + _gulpUtil.colors.yellow('Check-Sources') + '] The following files are not found:');
-				notFoundSources.forEach(function (_ref4, index) {
-					var base = _ref4.base,
-					    href = _ref4.href;
-					return console.log('  ' + (index + 1) + '. ' + _gulpUtil.colors.yellow('Base') + ': ' + _path2.default.relative(CWD, base) + '. ' + _gulpUtil.colors.yellow('Href') + ': ' + _path2.default.relative(CWD, href));
-				});
+				notFoundSources.forEach(({ base, href }, index) => console.log('  ' + (index + 1) + '. ' + _gulpUtil.colors.yellow('Base') + ': ' + _path2.default.relative(CWD, base) + '. ' + _gulpUtil.colors.yellow('Href') + ': ' + _path2.default.relative(CWD, href)));
 			}
 		}).catch(console.warn);
 	});

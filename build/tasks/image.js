@@ -5,16 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createImagemin = createImagemin;
 
-exports.default = function (options, _ref) {
-	var gulp = _ref.gulp;
-
+exports.default = function (options, { gulp }) {
 	gulp.task('default:image', function () {
 		return new Promise(function (resolve, reject) {
 			return setTimeout(function () {
-				return gulp.src('src/{img,images}/**/*.{jpg,png,gif}').pipe((0, _gulpNewer2.default)('dist')).pipe((0, _gulpIf2.default)(function (_ref2) {
-					var path = _ref2.path;
-					return !/\.min\.(jpg|png|gif)$/i.test(path);
-				}, createImagemin())).pipe(gulp.dest('dist')).on('end', resolve).on('error', reject);
+				return gulp.src('src/{img,images}/**/*.{jpg,png,gif}').pipe((0, _gulpNewer2.default)('dist')).pipe((0, _gulpIf2.default)(({ path }) => !/\.min\.(jpg|png|gif)$/i.test(path), createImagemin())).pipe(gulp.dest('dist')).on('end', resolve).on('error', reject);
 			}, 500);
 		});
 	});

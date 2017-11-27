@@ -1,5 +1,3 @@
-'use strict';
-
 import del from 'del';
 import sass from 'gulp-sass';
 import postcss from 'gulp-postcss';
@@ -59,7 +57,10 @@ export default function (options, {
 		return new Promise(function (resolve, reject) {
 				return setTimeout(function () {
 					return gulp.src('src/css/**/*.scss')
-						.pipe(newer('dist/css'))
+						.pipe(newer({
+							dest: 'dist/css',
+							ext: '.css'
+						}))
 						.pipe(sass({
 							outputStyle,
 							includePaths: [new Library('scss').cwd(), process.cwd() + '/src/css/sprite']
@@ -79,7 +80,7 @@ export default function (options, {
 	TaskListener.subscribe('ready', function initDefault() {
 		const allTasks = TaskLogger.getAllTasks();
 		const defaultDeps = ['default:sprite', 'default:image', 'default:webfont', 'default:iconfont'];
-		const dependencies = defaultDeps.filter(dep => -1 < allTasks.indexOf(dep));
+		const dependencies = defaultDeps.filter(dep => allTasks.indexOf(dep) > -1);
 		gulp.task('default:css', dependencies, cssHandler);
 		TaskListener.unsubscribe('ready', initDefault);
 	});

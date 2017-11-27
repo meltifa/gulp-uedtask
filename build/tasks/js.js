@@ -4,9 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-exports.default = function (options, _ref) {
-	var gulp = _ref.gulp;
-
+exports.default = function (options, { gulp }) {
 
 	gulp.task('dev:js', function () {
 		return gulp.src('src/js/**/*.js').pipe((0, _gulpNewer2.default)('dist/js')).pipe(gulp.dest('dist/js'));
@@ -21,10 +19,7 @@ exports.default = function (options, _ref) {
 	});
 
 	gulp.task('build:js', function () {
-		return gulp.src('src/js/**/*.js').pipe((0, _gulpNewer2.default)('dist/js')).pipe((0, _gulpIf2.default)(function (_ref2) {
-			var path = _ref2.path;
-			return !/\.min\.js$/i.test(path);
-		}, (0, _gulpUglify2.default)())).pipe(gulp.dest('dist/js'));
+		return gulp.src('src/js/**/*.js').pipe((0, _gulpNewer2.default)('dist/js')).pipe((0, _gulpIf2.default)(({ path }) => !/\.min\.js$/i.test(path), (0, _gulpUglify2.default)())).pipe(gulp.dest('dist/js'));
 	});
 };
 

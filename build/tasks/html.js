@@ -4,31 +4,31 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-exports.default = function (options, _ref) {
-	var gulp = _ref.gulp;
+exports.default = function (options, {
+	gulp
+}) {
 
-
-	var insertIconfont = Boolean(options.insertIconfont);
-	var htmlSrc = ['src/**/*.html', '!src/**/_*.html', '!src/{asset,template,inc}/**/*.html'];
-	var templateSrc = ['src/**/_*.html', 'src/{template,inc}/**/*.html'];
-	var tplData = {
+	const insertIconfont = Boolean(options.insertIconfont);
+	const htmlSrc = ['src/**/*.html', '!src/**/_*.html', '!src/{asset,template,inc}/**/*.html'];
+	const templateSrc = ['src/**/_*.html', 'src/{template,inc}/**/*.html'];
+	const tplData = {
 		engine: _juicer2.default,
 		dataTag: 'data',
 		data: {
-			Math: Math,
-			Number: Number,
-			Boolean: Boolean,
-			String: String,
-			Array: Array,
-			Object: Object,
-			JSON: JSON,
-			RegExp: RegExp,
-			Date: Date
+			Math,
+			Number,
+			Boolean,
+			String,
+			Array,
+			Object,
+			JSON,
+			RegExp,
+			Date
 		}
 	};
 
 	gulp.task('default:html', function () {
-		var stream = gulp.src(htmlSrc).pipe((0, _gulpNewer2.default)('dist')).pipe((0, _gulpFileInclude2.default)()).on('error', function (err) {
+		let stream = gulp.src(htmlSrc).pipe((0, _gulpNewer2.default)('dist')).pipe((0, _gulpFileInclude2.default)()).on('error', function (err) {
 			_gulpUtil2.default.log('fileIncluder Error!', err.message);
 			this.end();
 		}).pipe((0, _gulpHtmlTpl2.default)(tplData));
@@ -39,7 +39,7 @@ exports.default = function (options, _ref) {
 	});
 
 	gulp.task('html:update', function () {
-		var stream = gulp.src(htmlSrc).pipe((0, _gulpFileInclude2.default)()).on('fileIncluder', function (err) {
+		let stream = gulp.src(htmlSrc).pipe((0, _gulpFileInclude2.default)()).on('fileIncluder', function (err) {
 			_gulpUtil2.default.log('fileIncluder Error!', err.message);
 			this.end();
 		}).pipe((0, _gulpHtmlTpl2.default)(tplData));
@@ -58,9 +58,7 @@ exports.default = function (options, _ref) {
 	});
 
 	gulp.task('build:before:html', function () {
-		var pattern = getHTMLDirs().map(function (dir) {
-			return dir.replace(/^src((?=[\\/])|$)/, 'dist') + '/*.html';
-		});
+		const pattern = getHTMLDirs().map(dir => dir.replace(/^src((?=[\\/])|$)/, 'dist') + '/*.html');
 		return (0, _del2.default)(pattern);
 	});
 };
@@ -109,13 +107,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 _juicer2.default.set('strip', false);
 
-var CWD = process.cwd();
-var iconfontScssPath = CWD + '/src/css/_iconfont.scss';
+const CWD = process.cwd();
+const iconfontScssPath = CWD + '/src/css/_iconfont.scss';
 
 function isUsingIconfont() {
 	try {
-		var isDirectory = _fs2.default.lstatSync(CWD + '/src/asset/iconfont').isDirectory();
-		var isFile = _fs2.default.lstatSync(iconfontScssPath).isFile();
+		const isDirectory = _fs2.default.lstatSync(CWD + '/src/asset/iconfont').isDirectory();
+		const isFile = _fs2.default.lstatSync(iconfontScssPath).isFile();
 		return isDirectory && isFile;
 	} catch (e) {
 		return false;
@@ -123,7 +121,7 @@ function isUsingIconfont() {
 }
 
 function insertEntityToHTML() {
-	var icons = {};
+	const icons = {};
 
 	try {
 		_fs2.default.readFileSync(iconfontScssPath).toString().match(/\$__iconfont__data([\s\S]*?)\);/)[1].replace(/"([^"]+)":\s"([^"]+)",/g, function (_, name, entity) {
@@ -138,12 +136,12 @@ function insertEntityToHTML() {
 		tree.match({
 			tag: 'i'
 		}, function (node) {
-			var attrs = node.attrs;
+			const attrs = node.attrs;
 			if (attrs) {
-				var classText = attrs.class;
-				var exec = /\b_i-([\w-]+)/.exec(classText);
+				const classText = attrs.class;
+				const exec = /\b_i-([\w-]+)/.exec(classText);
 				if (exec) {
-					var name = exec[1].toLowerCase();
+					const name = exec[1].toLowerCase();
 					if (icons.hasOwnProperty(name)) {
 						node.attrs.class = classText.replace(exec[0], '').replace(/\s+/g, ' ').trim();
 						node.content = ['&#x' + icons[name] + ';'];
@@ -157,12 +155,12 @@ function insertEntityToHTML() {
 }
 
 function getHTMLDirs() {
-	var files = _glob2.default.sync('src/**/*.html').filter(function (file) {
+	let files = _glob2.default.sync('src/**/*.html').filter(function (file) {
 		return !/[\\/]_[^.\\/]\.html$/i.test(file) && !/src(\\|\/)(asset|template)\1/.test(file);
 	});
-	var logger = files.reduce(function (obj, file) {
-		var dir = _path2.default.parse(file).dir.replace(/\\/g, '/');
-		var relative = _path2.default.relative(CWD, dir);
+	const logger = files.reduce(function (obj, file) {
+		const dir = _path2.default.parse(file).dir.replace(/\\/g, '/');
+		const relative = _path2.default.relative(CWD, dir);
 		if (relative) {
 			obj[relative] = true;
 		}
