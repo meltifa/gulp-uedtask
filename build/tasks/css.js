@@ -47,6 +47,10 @@ var _library2 = _interopRequireDefault(_library);
 
 var _utils = require('../utils');
 
+var _gulpNewer = require('gulp-newer');
+
+var _gulpNewer2 = _interopRequireDefault(_gulpNewer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // 图片文件夹名
@@ -146,7 +150,11 @@ function css(gulp) {
 			}
 			// 延迟200ms避免编辑器保存时导致资源不可读而抛出错误
 			return setTimeout(function compiler() {
-				return gulp.src('src/css/**/*.scss').pipe((0, _gulpSass2.default)(sassOptions)).on('error', onError).pipe((0, _gulpPostcss2.default)(processors)).on('error', onError).pipe(gulp.dest('dist/css')).on('end', resolve);
+				return gulp.src('src/css/**/*.scss').pipe((0, _gulpNewer2.default)({
+					dest: 'dist/css',
+					ext: '.css',
+					extra: '**/_*.scss'
+				})).pipe((0, _gulpSass2.default)(sassOptions)).on('error', onError).pipe((0, _gulpPostcss2.default)(processors)).on('error', onError).pipe(gulp.dest('dist/css')).on('end', resolve);
 			}, 200);
 			// 统一捕获错误
 		}).catch(function log(e) {

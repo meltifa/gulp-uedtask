@@ -2,7 +2,7 @@
 	"presets": [
 	  ["env", {
 		"targets": {
-		  "node": "8.7.0"
+		  "node": "8.9.1"
 		}
 	  }]
 	]

@@ -9,6 +9,7 @@ import pxeditor from 'postcss-px-editor';
 import Sprite from 'postcss-sprite-property';
 import Library from '../../library';
 import { slash } from '../utils';
+import newer from 'gulp-newer';
 
 // 图片文件夹名
 // 先判断是否已存在，否则默认 images
@@ -108,6 +109,11 @@ export default function css(gulp) {
 			// 延迟200ms避免编辑器保存时导致资源不可读而抛出错误
 			return setTimeout(function compiler() {
 				return gulp.src('src/css/**/*.scss')
+					.pipe(newer({
+						dest: 'dist/css',
+						ext: '.css',
+						extra: '**/_*.scss'
+					}))
 					.pipe(sass(sassOptions))
 					.on('error', onError)
 					.pipe(postcss(processors))
