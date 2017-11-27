@@ -22,7 +22,8 @@ exports.default = function (options, {
 			return setTimeout(function () {
 				return gulp.src('src/css/**/*.scss').pipe((0, _gulpNewer2.default)({
 					dest: 'dist/css',
-					ext: '.css'
+					ext: '.css',
+					extra: '**/_*.scss'
 				})).pipe((0, _gulpSass2.default)({
 					outputStyle,
 					includePaths: [new _library2.default('scss').cwd(), process.cwd() + '/src/css/sprite']

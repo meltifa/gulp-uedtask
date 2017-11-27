@@ -59,7 +59,8 @@ export default function (options, {
 					return gulp.src('src/css/**/*.scss')
 						.pipe(newer({
 							dest: 'dist/css',
-							ext: '.css'
+							ext: '.css',
+							extra: '**/_*.scss'
 						}))
 						.pipe(sass({
 							outputStyle,
