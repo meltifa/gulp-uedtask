@@ -17,9 +17,6 @@ function getSettings(options) {
 
 	const settings = [];
 
-	if (!isNoHash) {
-		settings.push(urlEditor('add-version?cssSrc=src&cssDest=dist&md5=true'));
-	}
 	if (isUsingRem) {
 		settings.push(pxtorem({
 			rootValue,
@@ -36,6 +33,9 @@ function getSettings(options) {
 			loadPaths: ['dist/images/sprite', 'dist/img/sprite']
 		})
 	);
+	if (!isNoHash) {
+		settings.push(urlEditor('add-version?cssSrc=src&cssDest=dist&md5=true'));
+	}
 
 	return settings;
 }

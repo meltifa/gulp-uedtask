@@ -103,9 +103,6 @@ function getSettings(options) {
 
 	const settings = [];
 
-	if (!isNoHash) {
-		settings.push((0, _postcssUrlEditor2.default)('add-version?cssSrc=src&cssDest=dist&md5=true'));
-	}
 	if (isUsingRem) {
 		settings.push((0, _postcssPxtorem2.default)({
 			rootValue,
@@ -119,6 +116,9 @@ function getSettings(options) {
 		relative: true,
 		loadPaths: ['dist/images/sprite', 'dist/img/sprite']
 	}));
+	if (!isNoHash) {
+		settings.push((0, _postcssUrlEditor2.default)('add-version?cssSrc=src&cssDest=dist&md5=true'));
+	}
 
 	return settings;
 }
