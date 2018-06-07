@@ -24,7 +24,8 @@ exports.default = function (options, {
 			JSON,
 			RegExp,
 			Date
-		}
+		},
+		beautify: beautifyConfig
 	};
 
 	gulp.task('default:html', function () {
@@ -109,6 +110,12 @@ _juicer2.default.set('strip', false);
 
 const CWD = process.cwd();
 const iconfontScssPath = CWD + '/src/css/_iconfont.scss';
+
+const beautifyPath = CWD + '/.jsbeautifyrc';
+let beautifyConfig = {};
+if (_fs2.default.existsSync(beautifyPath)) {
+	beautifyConfig = JSON.parse(_fs2.default.readFileSync(beautifyPath, 'utf8'));
+}
 
 function isUsingIconfont() {
 	try {

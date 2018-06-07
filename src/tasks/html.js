@@ -16,6 +16,13 @@ juicer.set('strip', false);
 const CWD = process.cwd();
 const iconfontScssPath = CWD + '/src/css/_iconfont.scss';
 
+const beautifyPath = CWD + '/.jsbeautifyrc'
+let beautifyConfig = {};
+if (fs.existsSync(beautifyPath)) {
+	beautifyConfig = JSON.parse(fs.readFileSync(beautifyPath, 'utf8'));
+}
+
+
 function isUsingIconfont() {
 	try {
 		const isDirectory = fs.lstatSync(CWD + '/src/asset/iconfont').isDirectory();
@@ -102,7 +109,8 @@ export default function (options, {
 			JSON,
 			RegExp,
 			Date
-		}
+		},
+		beautify: beautifyConfig
 	};
 
 	gulp.task('default:html', function () {
