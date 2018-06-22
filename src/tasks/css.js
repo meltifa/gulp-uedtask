@@ -37,7 +37,7 @@ export default function css(gulp) {
 			}
 		},
 		retina: config.useRetina,
-		divide: config.useRetina && !config.divideBy2,
+		divide: config.useRetina && !config.divideBy2 && !config.useRem,
 		development: isDevelopment,
 		filter: /asset\/sprite\/.+\.png$/,
 		style: {},
